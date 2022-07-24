@@ -4,10 +4,11 @@ import Home from "../screens/Home";
 import Docs from "../screens/Docs";
 import Find from "../screens/Find";
 import More from "../screens/More";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from 'react-native-vector-icons/Feather';
 import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +23,7 @@ const HomeTab = () => {
                 component={Home}
                 options={{
                     tabBarIcon: ({focused}) => (
-                        <Feather name="home" size={26} color={focused ? '#3f37c9' : '#666666'} />
+                        <Octicons name="home" size={26} color={focused ? '#3f37c9' : '#666666'} />
                     ),
                     headerShown:false
                 }}
@@ -32,7 +33,8 @@ const HomeTab = () => {
                 component={Docs}
                 options={{
                     tabBarIcon: ({focused}) => (
-                        <MaterialCommunityIcons name="bookmark-multiple-outline" size={27} color={focused ? '#3f37c9' : '#666666'} />
+                        <Entypo name="archive" size={26} color={focused ? '#3f37c9' : '#666666'} />
+                        // <MaterialCommunityIcons name="bookmark-multiple-outline" size={27} color={focused ? '#3f37c9' : '#666666'} />
                     )
                 }}
             />
@@ -41,7 +43,7 @@ const HomeTab = () => {
                 component={Find}
                 options={{
                     tabBarIcon: ({focused}) => (
-                        <MaterialCommunityIcons name="map-marker-radius" size={27} color={focused ? '#3f37c9' : '#666666'} />
+                        <MaterialCommunityIcons name="link-variant" size={27} color={focused ? '#3f37c9' : '#666666'} />
                     ),
                 }}
             />
@@ -50,7 +52,7 @@ const HomeTab = () => {
                 component={More}
                 options={{
                     tabBarIcon: ({focused}) => (
-                        <MaterialCommunityIcons name="bookmark-multiple-outline" size={27} color={focused ? '#3f37c9' : '#666666'} />
+                        <Feather name="user" size={27} color={focused ? '#3f37c9' : '#666666'} />
                     )
                 }}
             />
