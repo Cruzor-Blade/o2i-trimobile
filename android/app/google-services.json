@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "69475241331",
+    "project_id": "o2i-tri",
+    "storage_bucket": "o2i-tri.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69475241331:android:3c1223f2271944a602c906",
+        "android_client_info": {
+          "package_name": "com.o2itrimobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "69475241331-4jgl1t3l3rsc9rdna8mih1flgdbvluis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUBnVUIfWMBAwFZuNmFQdaWZ_WYi88t_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "69475241331-4jgl1t3l3rsc9rdna8mih1flgdbvluis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
