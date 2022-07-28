@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import Download from '../components/Download';
 
 const categories = [
     {
@@ -77,6 +78,7 @@ const Home = ({navigation}) => {
     }
     return (
         <View style={styles.container}>
+            <Download/>
             <FlatList
                 ListHeaderComponent={() => 
                     <View style={styles.headerContainer}>

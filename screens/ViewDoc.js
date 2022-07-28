@@ -1,14 +1,88 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {NativeModules,View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import UploadParams from '../assets/UploadParams';
+import RNFetchBlob from 'rn-fetch-blob';
 
+// const RNFetchBlob = NativeModules.RNFetchBlob;
 const ViewDoc = ({route}) => {
     const document = route.params.document;
     const language = 'fr'
     const dropProperties = ['domain', 'OIType', 'reportType', 'period', 'fromValidityPeriod', 'toValidityPeriod'];
     const inputProperties = ['concernedTitles', 'editor', 'journal', 'validityPeriod', 'publicationDate'];
     
+    const downloadImage = () => {
+        const getExtension = (filename) => {
+            return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined ;
+        }
+
+        let date = new Date();
+        const DocURI = document.docUrl;
+        let ext = getExtension(DocURI);
+        ext = '.' + ext[0];
+
+        //Get config and fs from RNFetchBlob
+        const {config, fs} = RNFetchBlob;
+        let DownloadDir = fs.dirs.DownloadDir;
+        let filePath = DownloadDir+ '/o2i-tri/O2ITRI_'+ document.title + '_'+
+            Math.floor(date.getTime() + date.getSeconds()/2);
+
+        if(document.type) filePath+=document.type;
+
+        let options = {
+          fileCache: true,
+          addAndroidDownloads: {
+            //related to android only
+            useDownloadManager: true,
+            notification:true,
+            path:filePath  
+            // description: 'Document'
+          }
+        }
+
+        config(options)
+        .fetch('GET', DocURI)
+        .then((res) => {
+          //Showing alert for successful download
+          let status = res.info().status;
+          if (status == 200) {
+            alert("Document telecharge avec succes")
+          } else {
+            alert("Echec du telechargement")
+            console.log('Response error: ', JSON.stringify(res))
+          }
+        })
+        .catch((error) => {
+          console.log('Error while downloading: ', error)
+        })
+    }
+
+    const checkPermission = async () => {
+        if (Platform.OS === 'ios') {
+          downloadImage();
+        } else {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title:"Acces au stockage",
+                        message:"Authorisez l'acces au stockage"
+                    }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('Storage Permission Granted');
+                downloadImage();
+            } else {
+              alert("l'acces au stockage n'a pas ete attribue");
+            }
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+    }
+    // console.log('document created at: ', new Date(document.createdAt.toDate()) )
+    const createdAt = document.createdAt.toDate()             
+
     return (
         <View style={styles.container}>
             <View>
@@ -45,9 +119,9 @@ const ViewDoc = ({route}) => {
                         return null;
                     }
                     })}
-                    <Text>• Document chargé le {document.createdAt.getDay()+ ' '+document.createdAt.getMonth()+' '+ document.createdAt.getFullYear()}</Text>
+                    <Text>• Document chargé le {createdAt.getDay() + ' '+ createdAt.getMonth()+ ' ' + createdAt.getFullYear()}</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={checkPermission}>
                 <View style={styles.downloadButton}>
                     <Text>Télécharger</Text>
                 </View>
