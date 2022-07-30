@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, TextInput, ScrollView, LogBox} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
@@ -23,19 +23,7 @@ const Upload = () => {
     const [organisations, setOrganisations] = useState(UploadParams.fr.organisation);
 
     let periodOptions = [
-        // {label:2010, value:2010},
-        // {label:2011, value:2011},
-        // {label:2012, value:2012},
-        // {label:2013, value:2013},
-        // {label:2014, value:2014},
-        // {label:2015, value:2015},
-        // {label:2016, value:2016},
-        // {label:2017, value:2017},
-        // {label:2018, value:2018},
-        // {label:2019, value:2019},
-        // {label:2020, value:2020},
-        // {label:2021, value:2021},
-    ];
+        ];
     for (let i =2010; i< 2035; i++){
         periodOptions.push({label: i.toString(), value:i})
     };
@@ -59,22 +47,28 @@ const Upload = () => {
     const [reportTypeOpen, setReportTypeOpen] = useState(false);
     const [reportTypes, setReportTypes] = useState(UploadParams.fr.reportType);
     
-    useEffect(() => {
-        // console.log("Periods: ", periods)
-        // LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews'])
-    }, []);
+    
+    //Use memo recomputes the value (that may require a lot of computations) only when one
+    //or more of the dependencies changes. Thus, rerenders doesn't necessarily triggers
+    //recomputations.
+    const pickerArray = useMemo(() => [
+        [countryOpen, setCountryOpen],
+        [organisationOpen, setOrganisationOpen],
+        [periodOpen, setPeriodOpen],
+        [categoryOpen, setCategoryOpen],
+        [domainOpen, setDomainOpen],
+        [OITypeOpen, setOITypeOpen],
+        [reportTypeOpen, setReportTypeOpen],
+    ], [countryOpen, organisationOpen, periodOpen, categoryOpen, domainOpen, OITypeOpen, reportTypeOpen]);
 
-    let pickerItems = [
-        {label: 'Spain', value: 'spain'},
-        {label: 'Madrid', value: 'madrid'},
-        {label: 'Barcelona', value: 'barcelona'},
-    
-        {label: 'Italy', value: 'italy'},
-        {label: 'Rome', value: 'rome'},
-    
-        {label: 'Finland', value: 'finland'}
-      ];
-      const initialValue = ['italy', 'spain', 'barcelona', 'finland'];
+
+    const closePickers = () => {
+        pickerArray.forEach(stateArray => {
+            if(stateArray[0] ===true) {
+                stateArray[1](false);
+            }
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -88,6 +82,8 @@ const Upload = () => {
                     onChangeText={(text) => setTitle(text)}
                 />
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     listMode='FLATLIST' //Flatlist is the default mode
                     items={countries}
                     open={countryOpen}
@@ -101,6 +97,8 @@ const Upload = () => {
                     placeholder='country'
                 />
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     items={organisations.CMR}
                     open={organisationOpen}
                     value={organisation}
@@ -113,7 +111,7 @@ const Upload = () => {
                     zIndexInverse={2000}
                 />
                 <DropDownPicker
-                    // listMode="SCROLLVIEW"
+                    onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={periods}
                     open={periodOpen}
@@ -128,6 +126,8 @@ const Upload = () => {
                 />
                 
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     items={categories}
                     open={categoryOpen}
                     value={category}
@@ -140,6 +140,8 @@ const Upload = () => {
                     zIndexInverse={4000}
                 />
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     items={domains.values}
                     open={domainOpen}
                     value={domain}
@@ -152,6 +154,8 @@ const Upload = () => {
                     zIndexInverse={5000}
                 />
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     items={OITypes.values}
                     open={OITypeOpen}
                     value={OIType}
@@ -164,6 +168,8 @@ const Upload = () => {
                     zIndexInverse={6000}
                 />
                 <DropDownPicker
+                    onPress={closePickers}
+                    flatListProps={{nestedScrollEnabled:true}}
                     items={reportTypes.values.SD}
                     open={reportTypeOpen}
                     value={reportType}
