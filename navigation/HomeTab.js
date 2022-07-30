@@ -9,6 +9,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import DocsStack from "./DocsStack";
+import LinkStack from "./LinkStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -39,8 +40,8 @@ const HomeTab = () => {
                 }}
             />
             <Tab.Screen
-                name="Find"
-                component={Find}
+                name="LinkStack"
+                component={LinkStack}
                 options={{
                     tabBarIcon: ({focused}) => (
                         <MaterialCommunityIcons name="link-variant" size={27} color={focused ? '#3f37c9' : '#666666'} />
