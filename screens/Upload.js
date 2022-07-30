@@ -74,14 +74,18 @@ const Upload = () => {
         <View style={styles.container}>
             <ScrollView
                 nestedScrollEnabled
+                contentContainerStyle={{paddingHorizontal:10}}
             >
                 <TextInput
+                    onFocus={closePickers}
                     value={title}
                     style={styles.textInput}
                     placeholder='Title'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setTitle(text)}
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     listMode='FLATLIST' //Flatlist is the default mode
@@ -97,6 +101,7 @@ const Upload = () => {
                     placeholder='country'
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={organisations.CMR}
@@ -111,6 +116,7 @@ const Upload = () => {
                     zIndexInverse={2000}
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={periods}
@@ -126,6 +132,7 @@ const Upload = () => {
                 />
                 
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={categories}
@@ -140,6 +147,7 @@ const Upload = () => {
                     zIndexInverse={4000}
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={domains.values}
@@ -154,6 +162,7 @@ const Upload = () => {
                     zIndexInverse={5000}
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={OITypes.values}
@@ -168,6 +177,7 @@ const Upload = () => {
                     zIndexInverse={6000}
                 />
                 <DropDownPicker
+                    autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
                     items={reportTypes.values.SD}
@@ -182,42 +192,54 @@ const Upload = () => {
                     zIndexInverse={7000}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={concernedTitles}
                     style={styles.textInput}
                     placeholder='Concerned Titles'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={editor}
                     style={styles.textInput}
                     placeholder='Document editor'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={journal}
                     style={styles.textInput}
                     placeholder='Journal'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setJournal(text)}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={fromValidityPeriod}
                     style={styles.textInput}
                     //Date input
                     placeholder='Valid from'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setFromValidityPeriod(text)}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={toValidityPeriod}
                     style={styles.textInput}
                     //Date input
                     placeholder='Valid until'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setToValidityPeriod(text)}
                 />
                 <TextInput
+                    onFocus={closePickers}
                     value={publicationDate}
                     style={styles.textInput}
                     //Date input
                     placeholder='Publication date'
+                    placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setPublicationDate(text)}
                 />
                 
@@ -230,8 +252,18 @@ export default Upload;
 const styles = StyleSheet.create({
     container:{
         flex: 1,
+        // paddingHorizontal:10
     },
     textInput:{
-        flex:1
+        color:'#000000',
+        height:50,
+        borderRadius:8,
+        borderWidth:1,
+        marginVertical:3,
+        paddingHorizontal:10,
+        backgroundColor:'#fff'
+    },
+    dropDownInput:{
+        marginVertical:2,
     }
 })
