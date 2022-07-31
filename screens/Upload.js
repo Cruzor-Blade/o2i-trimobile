@@ -1,8 +1,7 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, ScrollView, LogBox} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
-import Picker from '../components/Picker';
 
 
 const Upload = () => {
@@ -70,11 +69,23 @@ const Upload = () => {
         });
     };
 
+    // console.log('Category value: ', category);
+    function isInputAllowed (type) {
+        return category && UploadParams['fr'].placeholders[type].allowed.includes(category);
+    }
+
+    function isSelectAllowed (type) {
+        return category && UploadParams['fr'][type].allowed.includes(category);
+    }
+
+    useEffect(() => {
+        setOrganisation('');
+    }, [country]);
     return (
         <View style={styles.container}>
             <ScrollView
                 nestedScrollEnabled
-                contentContainerStyle={{paddingHorizontal:10}}
+                contentContainerStyle={{paddingHorizontal:10, flex:1}}
             >
                 <TextInput
                     onFocus={closePickers}
@@ -100,21 +111,28 @@ const Upload = () => {
                     zIndexInverse={1000}
                     placeholder='country'
                 />
-                <DropDownPicker
-                    autoScroll
-                    onPress={closePickers}
-                    flatListProps={{nestedScrollEnabled:true}}
-                    items={organisations.CMR}
-                    open={organisationOpen}
-                    value={organisation}
-                    setItems={setOrganisations}
-                    setOpen={setOrganisationOpen}
-                    setValue={setOrganisation}
-                    style={styles.dropDownInput}
-                    placeholder='Organisation'
-                    zIndex={9000}
-                    zIndexInverse={2000}
-                />
+                {
+                    country ? (
+
+                        <DropDownPicker
+                            autoScroll
+                            onPress={closePickers}
+                            flatListProps={{nestedScrollEnabled:true}}
+                            items={organisations[country]}
+                            open={organisationOpen}
+                            value={organisation}
+                            setItems={setOrganisations}
+                            setOpen={setOrganisationOpen}
+                            setValue={setOrganisation}
+                            style={styles.dropDownInput}
+                            placeholder='Organisation'
+                            zIndex={9000}
+                            zIndexInverse={2000}
+                        />
+                    )
+                    :
+                    null
+                }
                 <DropDownPicker
                     autoScroll
                     onPress={closePickers}
@@ -156,7 +174,7 @@ const Upload = () => {
                     setItems={setDomains}
                     setOpen={setDomainOpen}
                     setValue={setDomain}
-                    style={styles.dropDownInput}
+                    style={{...styles.dropDownInput, display:!isSelectAllowed('domain') ? 'none':undefined}}
                     placeholder='Domain'
                     zIndex={6000}
                     zIndexInverse={5000}
@@ -171,7 +189,7 @@ const Upload = () => {
                     setItems={setOITypes}
                     setOpen={setOITypeOpen}
                     setValue={setOIType}
-                    style={styles.dropDownInput}
+                    style={{...styles.dropDownInput, display:!isSelectAllowed('OIType') ? 'none':undefined}}
                     placeholder='OI Type'
                     zIndex={5000}
                     zIndexInverse={6000}
@@ -186,7 +204,7 @@ const Upload = () => {
                     setItems={setReportTypes}
                     setOpen={setReportTypeOpen}
                     setValue={setReportType}
-                    style={styles.dropDownInput}
+                    style={{...styles.dropDownInput, display:!isSelectAllowed('reportType') ? 'none':undefined}}
                     placeholder='Report Type'
                     zIndex={4000}
                     zIndexInverse={7000}
@@ -194,7 +212,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={concernedTitles}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('concernedTitles') ? 'none':undefined}}
                     placeholder='Concerned Titles'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
@@ -202,7 +220,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={editor}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('editor') ? 'none':undefined}}
                     placeholder='Document editor'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
@@ -210,7 +228,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={journal}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('journal') ? 'none':undefined}}
                     placeholder='Journal'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setJournal(text)}
@@ -218,7 +236,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={fromValidityPeriod}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
                     //Date input
                     placeholder='Valid from'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
@@ -227,7 +245,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={toValidityPeriod}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
                     //Date input
                     placeholder='Valid until'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
@@ -236,7 +254,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={publicationDate}
-                    style={styles.textInput}
+                    style={{...styles.textInput, display:!isInputAllowed('publicationDate') ? 'none':undefined}}
                     //Date input
                     placeholder='Publication date'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
