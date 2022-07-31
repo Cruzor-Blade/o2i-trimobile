@@ -1,8 +1,9 @@
 import React, {useState, useMemo, useEffect} from 'react';
-import {View, Text, StyleSheet, TextInput, ScrollView, LogBox} from 'react-native';
+import {View, Text, StyleSheet, TextInput, ScrollView, LogBox, TouchableOpacity} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
-
+import { pick, types as DocumentTypes } from 'react-native-document-picker';
+import storage from '@react-native-firebase/storage';
 
 const Upload = () => {
     const [title, setTitle] = useState('');
@@ -46,6 +47,12 @@ const Upload = () => {
     const [reportTypeOpen, setReportTypeOpen] = useState(false);
     const [reportTypes, setReportTypes] = useState(UploadParams.fr.reportType);
     
+    const [document, setDocument] = useState(null);
+    
+
+    const [loading, setLoading] = useState(false);
+    const [formError, setFormError] = useState(null);
+    
     
     //Use memo recomputes the value (that may require a lot of computations) only when one
     //or more of the dependencies changes. Thus, rerenders doesn't necessarily triggers
@@ -77,6 +84,89 @@ const Upload = () => {
     function isSelectAllowed (type) {
         return category && UploadParams['fr'][type].allowed.includes(category);
     }
+
+    async function pickDocument () {
+        const result = await pick({
+            allowMultiSelection:false,
+            type:[
+                DocumentTypes.pdf,
+                DocumentTypes.doc,
+                DocumentTypes.docx,
+                DocumentTypes.ppt,
+                DocumentTypes.pptx
+            ]
+        });
+        const pickedDocument = {name: result[0].name, type: result[0].type, uri:result[0].uri}
+        setDocument(pickedDocument);
+    };
+
+    function uploadDocument () {
+        const storageRef = storage().ref(`photos/${user.uid}/${filename}`);
+    const task = storageRef.putFile(uploadUri);
+    };
+
+
+    const onFormSubmit = () => {
+        if(formError) setFormError(null);
+        const saveDocument = async(document, category, properties) => {
+            setLoading(true);
+            const storage = getStorage();
+            const currentDate = new Date();
+            const fileName = properties.title.split('.').join('_') + currentDate.toISOString() + '.' + filePlaceholder.split('.').pop()
+            const storageRef = ref(storage, `documents/${fileName}`);
+            await uploadBytes(storageRef, document);
+            const downloadUrl = await getDownloadURL(storageRef);
+            await addDoc(collection(db, 'resources','documents', 'waiting'), {...properties, docUrl:downloadUrl, category, createdAt: new Date()});
+            setLoading(false);
+            alert("Document charge avec succes")
+        }
+
+        const condition = 
+            title
+            &&country 
+            &&organisation
+            && period
+            && category
+            && (!isSelectAllowed('domain') || domain)
+            && (!isSelectAllowed('OIType') || OIType)
+            && (!isSelectAllowed('reportType') || reportType)
+            && (!isInputAllowed('concernedTitles') || concernedTitles)
+            && (!isInputAllowed('editor') || editor)
+            && (!isInputAllowed('journal') || journal)
+            && (!isInputAllowed('validityPeriod') || (fromValidityPeriod && toValidityPeriod))
+            && (!isInputAllowed('publicationDate') || publicationDate)
+            && document?true:false;
+
+        console.log('condition satisfied: ', condition);
+        if (condition) {
+            let docObj = {};
+            docObj.title = title;
+            docObj.country = country;
+            docObj.organisation = organisation;
+            docObj.period = period;
+            if (isSelectAllowed('domain')) docObj.domain = domain;
+            if (isSelectAllowed('OIType')) docObj.OIType = OIType;
+            if (isSelectAllowed('reportType')) docObj.reportType = reportType;
+            if (isInputAllowed('concernedTitles')) docObj.concernedTitles = concernedTitles;
+            if (isInputAllowed('editor')) docObj.editor = editor;
+            if (isInputAllowed('journal')) docObj.journal = journal;
+            if (isInputAllowed('validityPeriod')) docObj.fromValidityPeriod = fromValidityPeriod;
+            if (isInputAllowed('validityPeriod')) docObj.toValidityPeriod = toValidityPeriod;
+            if (isInputAllowed('publicationDate')) docObj.publicationDate = publicationDate;
+
+            console.log('Category: ', category);
+            console.log('Document properties: ', docObj);
+            try {
+                // saveDocument(document, category.value, docObj);
+            } catch (error) {
+                // setLoading(false);
+                // console.log('Error while saving the document: ', error)
+            }
+        } else {
+            setFormError('One or more fields are empty, please check again');
+        }
+    }
+
 
     useEffect(() => {
         setOrganisation('');
@@ -260,7 +350,38 @@ const Upload = () => {
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setPublicationDate(text)}
                 />
-                
+                <View>
+                    {document? 
+                    <Text>
+                        {document.name}
+                    </Text>
+                        :
+                    null
+                    }
+                    <TouchableOpacity onPress={pickDocument}>
+                        <View style={{backgroundColor:'blue', width:'95%', paddingVertical:15}}>
+                            <Text>
+                                Choisir un document
+                            </Text>
+                        </View>          
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    {formError? 
+                    <Text>
+                        {formError}
+                    </Text>
+                        :
+                    null
+                    }
+                    <TouchableOpacity onPress={onFormSubmit}>
+                        <View style={{backgroundColor:'blue', width:'95%', paddingVertical:15}}>
+                            <Text>
+                                Charger le document
+                            </Text>
+                        </View>          
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </View>
     )
