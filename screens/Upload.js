@@ -1,9 +1,12 @@
 import React, {useState, useMemo, useEffect} from 'react';
-import {View, Text, StyleSheet, TextInput, ScrollView, LogBox, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TextInput, Platform, ActivityIndicator, TouchableOpacity} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
 import { pick, types as DocumentTypes } from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import RNFetchBlob from 'rn-fetch-blob';
+
 
 const Upload = () => {
     const [title, setTitle] = useState('');
@@ -94,31 +97,41 @@ const Upload = () => {
                 DocumentTypes.docx,
                 DocumentTypes.ppt,
                 DocumentTypes.pptx
-            ]
+            ],
+            copyTo:'cachesDirectory'
         });
-        const pickedDocument = {name: result[0].name, type: result[0].type, uri:result[0].uri}
+        
+        const pathForFirebase = async (uri) => {
+            if (Platform.OS ==='ios') {
+                return uri;
+            } else {
+                const stat = await RNFetchBlob.fs.stat(uri);
+                return stat.path;
+            }
+        }
+        const pickedDocument = {name: result[0].name, type: result[0].type, uri:`file://${decodeURIComponent(result[0].fileCopyUri)}`};
         setDocument(pickedDocument);
-    };
-
-    function uploadDocument () {
-        const storageRef = storage().ref(`photos/${user.uid}/${filename}`);
-    const task = storageRef.putFile(uploadUri);
+        console.log('Picked doc: ', pickedDocument);
     };
 
 
     const onFormSubmit = () => {
         if(formError) setFormError(null);
         const saveDocument = async(document, category, properties) => {
-            setLoading(true);
-            const storage = getStorage();
             const currentDate = new Date();
-            const fileName = properties.title.split('.').join('_') + currentDate.toISOString() + '.' + filePlaceholder.split('.').pop()
-            const storageRef = ref(storage, `documents/${fileName}`);
-            await uploadBytes(storageRef, document);
-            const downloadUrl = await getDownloadURL(storageRef);
-            await addDoc(collection(db, 'resources','documents', 'waiting'), {...properties, docUrl:downloadUrl, category, createdAt: new Date()});
+            const fileName = properties.title.split('.').join('_') + currentDate.toISOString() + '.' + document.type;
+            const storageRef = storage().ref(`documents/${fileName}`);
+            setLoading(true);
+            await storageRef.putFile(document.uri);
+            const downloadUrl = await storageRef.getDownloadURL();
+
+            firestore()
+            .collection('resources/documents/waiting')
+            .add({...properties, docUrl:downloadUrl, category, createdAt: new Date()});
+            
             setLoading(false);
-            alert("Document charge avec succes")
+            clearForm();
+            alert("Document charge avec succes");
         }
 
         const condition = 
@@ -144,6 +157,7 @@ const Upload = () => {
             docObj.country = country;
             docObj.organisation = organisation;
             docObj.period = period;
+            docObj.type = document.name.split('.')[document.name.split('.').length-1];
             if (isSelectAllowed('domain')) docObj.domain = domain;
             if (isSelectAllowed('OIType')) docObj.OIType = OIType;
             if (isSelectAllowed('reportType')) docObj.reportType = reportType;
@@ -157,13 +171,31 @@ const Upload = () => {
             console.log('Category: ', category);
             console.log('Document properties: ', docObj);
             try {
-                // saveDocument(document, category.value, docObj);
+                saveDocument(document, category, docObj);
             } catch (error) {
-                // setLoading(false);
-                // console.log('Error while saving the document: ', error)
+                setLoading(false);
+                console.log('Error while saving the document: ', error)
             }
         } else {
             setFormError('One or more fields are empty, please check again');
+        }
+
+        const clearForm = () => {
+            setTitle(null);
+            setCountry(null);
+            setOrganisation(null);
+            setPeriod(null);
+            setCategory(null);
+            setDomain(null);
+            setOIType(null);
+            setReportType(null);
+            setConcernedtitles(null);
+            setEditor(null);
+            setJournal(null);
+            setFromValidityPeriod(null);
+            setToValidityPeriod(null);
+            setPublicationDate(null);
+            setDocument(null);
         }
     }
 
@@ -173,10 +205,6 @@ const Upload = () => {
     }, [country]);
     return (
         <View style={styles.container}>
-            <ScrollView
-                nestedScrollEnabled
-                contentContainerStyle={{paddingHorizontal:10, flex:1}}
-            >
                 <TextInput
                     onFocus={closePickers}
                     value={title}
@@ -382,7 +410,12 @@ const Upload = () => {
                         </View>          
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
+                {
+                    loading ?
+                    <ActivityIndicator size={30} color='#00ff00'/>
+                    :
+                    null
+                }
         </View>
     )
 }
@@ -391,7 +424,7 @@ export default Upload;
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        // paddingHorizontal:10
+        paddingHorizontal:10
     },
     textInput:{
         color:'#000000',
