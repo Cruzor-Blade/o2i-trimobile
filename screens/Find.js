@@ -2,11 +2,8 @@ import React, {useState, useMemo, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, Platform, ActivityIndicator, TouchableOpacity} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
-import { pick, types as DocumentTypes } from 'react-native-document-picker';
-import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import RNFetchBlob from 'rn-fetch-blob';
-
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 const Find = ({navigation}) => {
     const [title, setTitle] = useState('');
@@ -49,10 +46,8 @@ const Find = ({navigation}) => {
     const [reportType, setReportType] = useState(null);
     const [reportTypeOpen, setReportTypeOpen] = useState(false);
     const [reportTypes, setReportTypes] = useState(UploadParams.fr.reportType);
-    
-    const [document, setDocument] = useState(null);
-    
-
+     
+        
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState(null);
     
@@ -60,6 +55,7 @@ const Find = ({navigation}) => {
     //Use memo recomputes the value (that may require a lot of computations) only when one
     //or more of the dependencies changes. Thus, rerenders doesn't necessarily triggers
     //recomputations.
+
     const pickerArray = useMemo(() => [
         [countryOpen, setCountryOpen],
         [organisationOpen, setOrganisationOpen],
@@ -82,11 +78,21 @@ const Find = ({navigation}) => {
     // console.log('Category value: ', category);
     function isInputAllowed (type) {
         return category && UploadParams['fr'].placeholders[type].allowed.includes(category);
-    }
+    };
 
     function isSelectAllowed (type) {
         return category && UploadParams['fr'][type].allowed.includes(category);
-    }
+    };
+
+
+    function showDatepicker (setState) {
+        DateTimePickerAndroid.open({
+            value:(new Date()),
+            onChange:(event, selectedDate) => setState(`${selectedDate.getDate()}-${selectedDate.getMonth()+1}-${selectedDate.getFullYear()}`),
+            mode:'date',
+            is24Hour:true
+        });
+    };
 
 
     const onFormSubmit = async () => {
@@ -233,7 +239,7 @@ const Find = ({navigation}) => {
                     setItems={setDomains}
                     setOpen={setDomainOpen}
                     setValue={setDomain}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('domain') ? 'none':undefined}}
+                    style={isSelectAllowed('domain') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='Domain'
                     zIndex={6000}
                     zIndexInverse={5000}
@@ -248,7 +254,7 @@ const Find = ({navigation}) => {
                     setItems={setOITypes}
                     setOpen={setOITypeOpen}
                     setValue={setOIType}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('OIType') ? 'none':undefined}}
+                    style={isSelectAllowed('OIType') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='OI Type'
                     zIndex={5000}
                     zIndexInverse={6000}
@@ -263,7 +269,7 @@ const Find = ({navigation}) => {
                     setItems={setReportTypes}
                     setOpen={setReportTypeOpen}
                     setValue={setReportType}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('reportType') ? 'none':undefined}}
+                    style={isSelectAllowed('reportType') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='Report Type'
                     zIndex={4000}
                     zIndexInverse={7000}
@@ -271,7 +277,7 @@ const Find = ({navigation}) => {
                 <TextInput
                     onFocus={closePickers}
                     value={concernedTitles}
-                    style={{...styles.textInput, display:!isInputAllowed('concernedTitles') ? 'none':undefined}}
+                    style={isInputAllowed('concernedTitles') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Concerned Titles'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
@@ -279,7 +285,7 @@ const Find = ({navigation}) => {
                 <TextInput
                     onFocus={closePickers}
                     value={editor}
-                    style={{...styles.textInput, display:!isInputAllowed('editor') ? 'none':undefined}}
+                    style={isInputAllowed('editor') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Document editor'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
@@ -287,39 +293,62 @@ const Find = ({navigation}) => {
                 <TextInput
                     onFocus={closePickers}
                     value={journal}
-                    style={{...styles.textInput, display:!isInputAllowed('journal') ? 'none':undefined}}
+                    style={isInputAllowed('journal') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Journal'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setJournal(text)}
                 />
-                <TextInput
-                    onFocus={closePickers}
-                    value={fromValidityPeriod}
-                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Valid from'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setFromValidityPeriod(text)}
-                />
-                <TextInput
-                    onFocus={closePickers}
-                    value={toValidityPeriod}
-                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Valid until'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setToValidityPeriod(text)}
-                />
-                <TextInput
-                    onFocus={closePickers}
-                    value={publicationDate}
-                    style={{...styles.textInput, display:!isInputAllowed('publicationDate') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Publication date'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setPublicationDate(text)}
-                />
-                
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setFromValidityPeriod);
+                    }}
+                    >
+                    <View
+                        style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>
+                            {
+                            fromValidityPeriod? fromValidityPeriod.toLocaleString()
+                                :
+                            'Valid from'
+                            }
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setToValidityPeriod);
+                    }}
+                    >
+                    <View
+                        style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                            toValidityPeriod? toValidityPeriod.toLocaleString()
+                            :
+                            'Valid until'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setPublicationDate);
+                    }}
+                    >
+                    <View
+                    style={isInputAllowed('publicationDate')?{...styles.textInput} : {display:'none'}}
+                        
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                            publicationDate? publicationDate.toLocaleString()
+                            :
+                            'Publication date'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
                 <View>
                     {formError? 
                     <Text>
@@ -359,7 +388,8 @@ const styles = StyleSheet.create({
         borderWidth:1,
         marginVertical:3,
         paddingHorizontal:10,
-        backgroundColor:'#fff'
+        backgroundColor:'#fff',
+        justifyContent:'center'
     },
     dropDownInput:{
         marginVertical:2,
