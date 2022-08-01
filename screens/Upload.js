@@ -5,8 +5,7 @@ import UploadParams from '../assets/UploadParams';
 import { pick, types as DocumentTypes } from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import RNFetchBlob from 'rn-fetch-blob';
-
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 const Upload = () => {
     const [title, setTitle] = useState('');
@@ -82,11 +81,20 @@ const Upload = () => {
     // console.log('Category value: ', category);
     function isInputAllowed (type) {
         return category && UploadParams['fr'].placeholders[type].allowed.includes(category);
-    }
+    };
 
     function isSelectAllowed (type) {
         return category && UploadParams['fr'][type].allowed.includes(category);
-    }
+    };
+
+    function showDatepicker (setState) {
+        DateTimePickerAndroid.open({
+            value:(new Date()),
+            onChange:(event, selectedDate) => setState(`${selectedDate.getDate()}-${selectedDate.getMonth()+1}-${selectedDate.getFullYear()}`),
+            mode:'date',
+            is24Hour:true
+        });
+    };
 
     async function pickDocument () {
         const result = await pick({
@@ -101,14 +109,7 @@ const Upload = () => {
             copyTo:'cachesDirectory'
         });
         
-        const pathForFirebase = async (uri) => {
-            if (Platform.OS ==='ios') {
-                return uri;
-            } else {
-                const stat = await RNFetchBlob.fs.stat(uri);
-                return stat.path;
-            }
-        }
+        
         const pickedDocument = {name: result[0].name, type: result[0].type, uri:`file://${decodeURIComponent(result[0].fileCopyUri)}`};
         setDocument(pickedDocument);
         console.log('Picked doc: ', pickedDocument);
@@ -292,7 +293,7 @@ const Upload = () => {
                     setItems={setDomains}
                     setOpen={setDomainOpen}
                     setValue={setDomain}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('domain') ? 'none':undefined}}
+                    style={isSelectAllowed('domain') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='Domain'
                     zIndex={6000}
                     zIndexInverse={5000}
@@ -307,7 +308,7 @@ const Upload = () => {
                     setItems={setOITypes}
                     setOpen={setOITypeOpen}
                     setValue={setOIType}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('OIType') ? 'none':undefined}}
+                    style={isSelectAllowed('OIType') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='OI Type'
                     zIndex={5000}
                     zIndexInverse={6000}
@@ -322,7 +323,7 @@ const Upload = () => {
                     setItems={setReportTypes}
                     setOpen={setReportTypeOpen}
                     setValue={setReportType}
-                    style={{...styles.dropDownInput, display:!isSelectAllowed('reportType') ? 'none':undefined}}
+                    style={isSelectAllowed('reportType') ?{...styles.dropDownInput}:{display:'none'}}
                     placeholder='Report Type'
                     zIndex={4000}
                     zIndexInverse={7000}
@@ -330,7 +331,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={concernedTitles}
-                    style={{...styles.textInput, display:!isInputAllowed('concernedTitles') ? 'none':undefined}}
+                    style={isInputAllowed('concernedTitles') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Concerned Titles'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
@@ -338,7 +339,7 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={editor}
-                    style={{...styles.textInput, display:!isInputAllowed('editor') ? 'none':undefined}}
+                    style={isInputAllowed('editor') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Document editor'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
@@ -346,38 +347,62 @@ const Upload = () => {
                 <TextInput
                     onFocus={closePickers}
                     value={journal}
-                    style={{...styles.textInput, display:!isInputAllowed('journal') ? 'none':undefined}}
+                    style={isInputAllowed('journal') ?{...styles.textInput}:{display:'none'}}
                     placeholder='Journal'
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setJournal(text)}
                 />
-                <TextInput
-                    onFocus={closePickers}
-                    value={fromValidityPeriod}
-                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Valid from'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setFromValidityPeriod(text)}
-                />
-                <TextInput
-                    onFocus={closePickers}
-                    value={toValidityPeriod}
-                    style={{...styles.textInput, display:!isInputAllowed('validityPeriod') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Valid until'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setToValidityPeriod(text)}
-                />
-                <TextInput
-                    onFocus={closePickers}
-                    value={publicationDate}
-                    style={{...styles.textInput, display:!isInputAllowed('publicationDate') ? 'none':undefined}}
-                    //Date input
-                    placeholder='Publication date'
-                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                    onChangeText={(text) => setPublicationDate(text)}
-                />
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setFromValidityPeriod);
+                    }}
+                    >
+                    <View
+                        style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>
+                            {
+                            fromValidityPeriod? fromValidityPeriod.toLocaleString()
+                                :
+                            'Valid from'
+                            }
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setToValidityPeriod);
+                    }}
+                    >
+                    <View
+                        style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                            toValidityPeriod? toValidityPeriod.toLocaleString()
+                            :
+                            'Valid until'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        closePickers();
+                        showDatepicker(setPublicationDate);
+                    }}
+                    >
+                    <View
+                    style={isInputAllowed('publicationDate')?{...styles.textInput} : {display:'none'}}
+                        
+                    >
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                            publicationDate? publicationDate.toLocaleString()
+                            :
+                            'Publication date'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
                 <View>
                     {document? 
                     <Text>
@@ -433,6 +458,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         marginVertical:3,
         paddingHorizontal:10,
+        justifyContent:'center',
         backgroundColor:'#fff'
     },
     dropDownInput:{
