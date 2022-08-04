@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import auth from '@react-native-firebase/auth';
 import {View, Text, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
 
-const SignIn = () => {
+const SignIn = ({navigation}) => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
 
@@ -28,6 +28,9 @@ const SignIn = () => {
                 <View style={{height:40, width:'95%', backgroundColor:'green'}}>
                     <Text>Log In</Text>
                 </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={{color:'green'}}>Don't have an account? Register instead</Text>
             </TouchableOpacity>
         </View>
     )
