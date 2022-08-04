@@ -4,26 +4,13 @@ import auth from '@react-native-firebase/auth';
 import { AuthContext } from '../context/AuthContext';
 import AuthStack from './AuthStack';
 import HomeTab from './HomeTab';
-
+import firestore from '@react-native-firebase/firestore';
 
 const Routes = () => {
     const {user, setUser} = useContext(AuthContext);
     const [initializing, setInitializing] = useState(true);
-
-
-    // const onAuthStateChanged = (user) => {
-    //     setUser(user);
-    //     if (initializing) setInitializing(false);
-    // }
-
-    // useEffect(async () =>{
-    //     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    //     return subscriber;
-    // }, []);
-
+      
     const unsubscribe = auth().onAuthStateChanged((user) => {
-        console.log('Auth state changed')
-        console.log("User: ",user)
         if(initializing) setInitializing(false);
         if (user) {
           setUser(user);
@@ -32,14 +19,12 @@ const Routes = () => {
         }
       });
       
-      // Unsubscribe from further state changes
+
       useEffect(() => {
-        if(user){
-            (async () => {
-                unsubscribe();
-            })
+          if(user){
+            unsubscribe();
         }
-      }, [user])
+      }, [user]);
     if(initializing) return null; //Return whatever we want when the app is loading
     return (
         <>  
