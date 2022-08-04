@@ -14,14 +14,23 @@ const AuthStack = () => {
             <Stack.Screen
                 name='Onboarding'
                 component={Onboarding}
+                options={{
+                    headerShown:false
+                }}
             />
             <Stack.Screen
                 name='SignIn'
                 component={SignIn}
+                options={{
+                    headerTitle:'Connexion'
+                }}
             />
             <Stack.Screen
                 name='SignUp'
                 component={SignUp}
+                options={{
+                    headerTitle:'Créer un compte'
+                }}
             />
         </Stack.Navigator>
     )

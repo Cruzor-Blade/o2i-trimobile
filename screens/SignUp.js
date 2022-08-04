@@ -2,6 +2,10 @@ import React, {useContext, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import CustomInput from '../components/CustomInput';
+import Foundation from 'react-native-vector-icons/Foundation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
 const SignUp = ({navigation}) => {
@@ -26,41 +30,46 @@ const SignUp = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <TextInput
+            <Text style={{fontSize:24, color:'#000', marginHorizontal:30, textAlign:'center', marginBottom:35}}>
+                Créez un compte sur la plateforme <Text style={{color:'#1C7D2D', fontWeight:'500'}}>O2I-TRI</Text>
+            </Text>
+            <CustomInput
+                IconComponent={() => <Foundation size={30} name='telephone' color='#47A72A' />}
                 keyboardType='phone-pad'
                 value={phoneNum}
                 placeholder='numero de téléphone'
                 onChangeText={(phoneNum) => setPhoneNum(phoneNum)}
-                style={styles.textInput}
             />
-            <TextInput
+            <CustomInput
+                IconComponent={() => <AntDesign size={30} name='mail' color='#47A72A' />}
                 keyboardType='email-address'
                 value={email}
                 placeholder='addresse email'
                 onChangeText={(email) => setEmail(email)}
-                style={styles.textInput}
             />
-            <TextInput
-                secureTextEntry={true}
+            <CustomInput
+                IconComponent={() => <Ionicons size={30} name={showPassword?'eye':'eye-off'} color={showPassword? '#858789' : '#47A72A'} />}
+                secureTextEntry={!showPassword}
+                onIconPress={() => setShowPassword(!showPassword)}
                 value={password}
                 placeholder='mot de passe'
                 onChangeText={(password) => setPassword(password)}
-                style={styles.textInput}
             />
-            <TextInput
-                secureTextEntry={true}
+            <CustomInput
+                IconComponent={() => <Ionicons size={30} name={showConfirmPassword?'eye':'eye-off'} color={showConfirmPassword ? '#858789':'#47A72A'} />}
+                secureTextEntry={!showConfirmPassword}
+                onIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 value={confirmPassword}
                 placeholder='confirmez le numero de téléphone'
                 onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
-                style={styles.textInput}
             />
-            <TouchableOpacity onPress={SignUp}>
-                <View style={{height:40, width:'95%', backgroundColor:'green'}}>
-                    <Text>Créer le compte</Text>
-                </View>
+            <TouchableOpacity style={styles.logger} onPress={SignUp}>
+                    <Text style={{color:'#fff', fontWeight:'600', fontSize:16}}>Créer le compte</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                <Text style={{color:'green'}}>Déjà un compte? Connectez vous plutôt</Text>
+                <Text style={{color:'#000', marginHorizontal:80, textAlign:'center'}}>
+                    Déjà un compte? <Text style={{color:'#1C7D2D', fontWeight:'500'}}>Connectez vous plutôt</Text>
+                </Text>
             </TouchableOpacity>
         </View>
     )
@@ -78,10 +87,21 @@ const styles = StyleSheet.create({
         height:50,
         borderRadius:8,
         borderWidth:1,
-        marginVertical:3,
+        borderColor:'rgba(71, 167, 42, 0.7)',
+        marginVertical:5,
         paddingHorizontal:10,
         justifyContent:'center',
         backgroundColor:'#fff',
         width:'95%'
     },
+    logger: {
+        height:45,
+        width:'95%',
+        backgroundColor:'#1C7D2D',
+        paddingHorizontal:30,
+        alignItems:'center',
+        justifyContent:'center',
+        borderRadius:10,
+        marginVertical:40
+    }
 })
