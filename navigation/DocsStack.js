@@ -17,7 +17,13 @@ const DocsStack = () => {
                     headerTitle:'Documents'
                 }}
             />
-            <Stack.Screen name="ViewDoc" component={ViewDoc} />
+            <Stack.Screen
+                name="ViewDoc"
+                component={ViewDoc}
+                options={{
+                    headerTitle:'Voir le document'
+                }}
+                />
         </Stack.Navigator>
     )
 }
