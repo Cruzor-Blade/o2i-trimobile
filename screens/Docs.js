@@ -1,10 +1,13 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import firestore from '@react-native-firebase/firestore';
 
 const Docs = ({navigation, route}) => {
-    // console.log("Route params documents: ",route.params.documents);
-    const documents = route.params?.documents;
+    let paramsDocs = route.params?.documents||null;
+    const [documents, setDocuments] = useState(paramsDocs);
+    const [loading, setLoading] = useState(false);
+    
     const { width } = Dimensions.get('window');
     const getReadableDate = (date) => {
         const monthsArray = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -12,10 +15,44 @@ const Docs = ({navigation, route}) => {
         return readableDate
     };
 
+    const getDocs = async () => {
+        setLoading(true);
+        let docsArray = [];
+        const docs = await firestore()
+        .collection('resources')
+        .doc('documents')
+        .collection('validated')
+        .get();
+
+        docs.forEach(document => {
+            docsArray.push({...document.data(), id:document.id});
+        });
+        setDocuments(docsArray);
+
+        setLoading(false);
+    };
+
+    //Force state update after navigation if there are documents in the params
+    //and clear the documents params to avoid rerender (since documents params would still exists if not)
+    if(route.params?.documents) {
+        console.log('Route params: ', route.params?.documents)
+        setDocuments(route.params?.documents);
+        route.params.documents = undefined;
+    }
+    useEffect(() => {
+        if(!documents) {
+            getDocs();
+        };
+
+    }, []);
     return (
         <View style={styles.container}>
             {
-                documents ?
+                loading ?
+                <View style={{alignItems:'center', justifyContent:'center', flex:1}}>
+                    <ActivityIndicator size='large' />
+                </View>
+                :
                 <FlatList
                     data ={documents}
                     numColumns={2}
@@ -40,10 +77,6 @@ const Docs = ({navigation, route}) => {
                         </TouchableOpacity>
                     )}
                 />
-                :
-                <View style={{alignItems:'center', justifyContent:'center', flex:1}}>
-                    <Text style={{fontSize:19, color:'#000'}}>Rien à voir ici pour le moment...</Text>
-                </View>
             }
         </View>
     )
