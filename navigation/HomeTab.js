@@ -42,7 +42,8 @@ const HomeTab = () => {
                     tabBarIcon: ({focused}) => (
                         <Entypo name="archive" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
                         // <MaterialCommunityIcons name="bookmark-multiple-outline" size={27} color={focused ? '#3f37c9' : '#666666'} />
-                    )
+                    ),
+                    headerShown:false
                 }}
             />
             <Tab.Screen

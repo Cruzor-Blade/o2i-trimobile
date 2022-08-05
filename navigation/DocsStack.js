@@ -10,7 +10,13 @@ const DocsStack = () => {
         <Stack.Navigator
             initialRouteName='Docs'
         >
-            <Stack.Screen name="Docs" component={Docs} />
+            <Stack.Screen
+                name="Docs"
+                component={Docs}
+                options={{
+                    headerTitle:'Documents'
+                }}
+            />
             <Stack.Screen name="ViewDoc" component={ViewDoc} />
         </Stack.Navigator>
     )
