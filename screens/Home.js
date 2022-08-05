@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import LinearGradient from 'react-native-linear-gradient';
 
 const categories = [
     {
@@ -78,27 +79,29 @@ const Home = ({navigation}) => {
     return (
         <View style={styles.container}>
             <FlatList
-                ListHeaderComponent={() => 
-                    <View style={styles.headerContainer}>
-                        <Text style={styles.headerTitle}>Les categories</Text>
-                    </View>
-                }
-                stickyHeaderIndices={[0]}
+                // ListHeaderComponent={() => 
+                //     <View style={styles.headerContainer}>
+                //         <Text style={styles.headerTitle}>Les catégories</Text>
+                //     </View>
+                // }
+                // stickyHeaderIndices={[0]}
                 data={categories}
                 keyExtractor={item => item.title}
                 renderItem={({item}) => (
                     <TouchableOpacity
-                        activeOpacity={0.7}
+                        activeOpacity={0.8}
                         onPress={() => seeDocs(item.value)}
                         >
-                        <View style={styles.category}>
+                        <LinearGradient
+                            colors={['rgba(57, 205, 83, 0.9)', 'rgba(65, 177, 70, 1)', 'rgba(71, 167, 42, 1)']}
+                            style={styles.category}>
                             <Text style={styles.categoryTitle}>
                                 {item.title}
                             </Text>
                             <Text style={styles.categoryDescription}>
                                 {item.description}
                             </Text>
-                        </View>
+                        </LinearGradient>
                     </TouchableOpacity>
                 )}
                 contentContainerStyle={{paddingVertical:10}}
@@ -116,12 +119,16 @@ const styles = StyleSheet.create({
         backgroundColor:'#ffffff',
     },
     headerContainer:{
-        backgroundColor:'#555555'
+        borderWidth:4,
+        borderColor:'rgb(0, 106, 179)',
+        backgroundColor:'#fff',
+        borderRadius:10
     },
     headerTitle: {
         textAlign:'center',
         fontSize:24,
-        paddingVertical:8
+        paddingVertical:8,
+        color:'rgb(71, 167, 42)'
 
     },
     category:{
@@ -136,11 +143,14 @@ const styles = StyleSheet.create({
         textAlign:'center',
         paddingHorizontal:10,
         marginVertical:5,
-        fontSize:19
+        fontSize:19,
+        fontWeight:'500',
+        color:'#fff'
     },
     categoryDescription:{
         paddingHorizontal:15,
         fontSize:16,
-        marginBottom:15
+        marginBottom:15,
+        color:'#fff'
     }
 })
