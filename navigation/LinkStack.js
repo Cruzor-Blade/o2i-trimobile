@@ -22,14 +22,14 @@ const LinkStack = () => {
                 name='Find'
                 component={Find}
                 options={{
-                    headerTitle:'Trouver un document'
+                    headerTitle:'Trouver le document'
                 }}
             />
             <Stack.Screen
                 name='Upload'
                 component={Upload}
                 options={{
-                    headerTitle:'Charger le document'
+                    headerTitle:'Charger un document'
                 }}
             />
         </Stack.Navigator>

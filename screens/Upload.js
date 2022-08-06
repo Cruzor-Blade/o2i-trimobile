@@ -361,7 +361,7 @@ const Upload = () => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:'rgba(0,0,0,0.5)'}}>
+                        <Text style={{color:fromValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>
                             {
                             fromValidityPeriod? fromValidityPeriod.toLocaleString()
                                 :
@@ -379,7 +379,7 @@ const Upload = () => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:toValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>{
                             toValidityPeriod? toValidityPeriod.toLocaleString()
                             :
                             'Valid until'}
@@ -396,7 +396,7 @@ const Upload = () => {
                     style={isInputAllowed('publicationDate')?{...styles.textInput} : {display:'none'}}
                         
                     >
-                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:publicationDate?'#000':'rgba(0,0,0,0.5)'}}>{
                             publicationDate? publicationDate.toLocaleString()
                             :
                             'Publication date'}
@@ -405,34 +405,30 @@ const Upload = () => {
                 </TouchableOpacity>
                 <View>
                     {document? 
-                    <Text>
+                    <Text style={{marginHorizontal:20, bottom:-8, color:'#000'}}>
                         {document.name}
                     </Text>
                         :
                     null
                     }
-                    <TouchableOpacity onPress={pickDocument}>
-                        <View style={{backgroundColor:'blue', width:'95%', paddingVertical:15}}>
-                            <Text>
-                                Choisir un document
-                            </Text>
-                        </View>          
+                    <TouchableOpacity style={{backgroundColor:'rgb(0, 106, 179)', ...styles.button, marginTop:20}} onPress={pickDocument}>
+                        <Text style={{color:'#fff'}}>
+                            Choisir un document
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 <View>
                     {formError? 
-                    <Text>
+                    <Text style={{marginHorizontal:20, color:'red'}}>
                         {formError}
                     </Text>
                         :
                     null
                     }
-                    <TouchableOpacity onPress={onFormSubmit}>
-                        <View style={{backgroundColor:'blue', width:'95%', paddingVertical:15}}>
-                            <Text>
-                                Charger le document
-                            </Text>
-                        </View>          
+                    <TouchableOpacity style={{backgroundColor:'rgb(71, 167, 42)', ...styles.button}} onPress={onFormSubmit}>
+                        <Text style={{color:'#fff'}}>
+                            Charger le document
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 {
@@ -449,19 +445,36 @@ export default Upload;
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        paddingHorizontal:10
+        paddingTop:20
     },
     textInput:{
         color:'#000000',
         height:50,
         borderRadius:8,
         borderWidth:1,
-        marginVertical:3,
+        borderColor:'#878589',
+        marginVertical:5,
         paddingHorizontal:10,
         justifyContent:'center',
-        backgroundColor:'#fff'
+        backgroundColor:'#fff',
+        width:'95%',
+        alignSelf:'center'
     },
     dropDownInput:{
         marginVertical:2,
+        width:'95%',
+        borderWidth:1,
+        borderColor:'#878589',
+        alignSelf:'center'
+    },
+    button: {
+        height:45,
+        width:'95%',
+        marginVertical:10,
+        paddingHorizontal:30,
+        alignItems:'center',
+        justifyContent:'center',
+        borderRadius:10,
+        alignSelf:'center',
     }
 })
