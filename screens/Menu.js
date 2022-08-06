@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
     },
     menuItem:{
         backgroundColor:'rgb(0, 106, 179)',
-        width:'100%',
         height:45,
-        marginVertical:2,
+        marginVertical:3,
         alignItems:'center',
-        flexDirection:'row'
+        flexDirection:'row',
+        marginHorizontal:3
     },
     menuIcon:{
         marginHorizontal:10,

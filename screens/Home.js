@@ -92,7 +92,7 @@ const Home = ({navigation}) => {
                         activeOpacity={0.8}
                         onPress={() => seeDocs(item.value)}
                         >
-                        <LinearGradient
+                        <View
                             colors={['rgba(57, 205, 83, 0.9)', 'rgba(65, 177, 70, 1)', 'rgba(71, 167, 42, 1)']}
                             style={styles.category}>
                             <Text style={styles.categoryTitle}>
@@ -101,7 +101,7 @@ const Home = ({navigation}) => {
                             <Text style={styles.categoryDescription}>
                                 {item.description}
                             </Text>
-                        </LinearGradient>
+                        </View>
                     </TouchableOpacity>
                 )}
                 contentContainerStyle={{paddingVertical:10}}
@@ -136,8 +136,10 @@ const styles = StyleSheet.create({
         flex:1,
         marginVertical:15,
         marginHorizontal:25,
-        backgroundColor:'#dddddd',
+        backgroundColor:'#efefef',
         borderRadius:10,
+        borderWidth:4,
+        borderColor:'rgb(0, 106, 179)'
     },
     categoryTitle:{
         textAlign:'center',
@@ -145,12 +147,12 @@ const styles = StyleSheet.create({
         marginVertical:5,
         fontSize:19,
         fontWeight:'500',
-        color:'#fff'
+        color:'rgb(0, 106, 179)'
     },
     categoryDescription:{
         paddingHorizontal:15,
         fontSize:16,
         marginBottom:15,
-        color:'#fff'
+        color:'rgb(0, 106, 179)'
     }
 })
