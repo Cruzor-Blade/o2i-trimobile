@@ -14,14 +14,23 @@ const LinkStack = () => {
             <Stack.Screen
                 name='Menu'
                 component={Menu}
+                options={{
+                    headerTitle:'Liens'
+                }}
             />
             <Stack.Screen
                 name='Find'
                 component={Find}
+                options={{
+                    headerTitle:'Trouver un document'
+                }}
             />
             <Stack.Screen
                 name='Upload'
                 component={Upload}
+                options={{
+                    headerTitle:'Charger le document'
+                }}
             />
         </Stack.Navigator>
     )

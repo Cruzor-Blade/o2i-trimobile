@@ -26,13 +26,14 @@ const HomeTab = () => {
                     tabBarIcon: ({focused}) => (
                         <Octicons name="home" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
                     ),
-                    header:() => (
-                        <View style={{borderWidth:2, borderColor:'rgb(0, 106, 179)', backgroundColor:'#fff', borderBottomLeftRadius:10, borderBottomRightRadius:10, borderTopWidth:0, elevation:5}}>
-                            <Text style={{textAlign:'center', fontSize:24, paddingVertical:8, color:'rgb(71, 167, 42)'}}>
-                                Les Catégories
-                            </Text>
-                        </View>
-                    )
+                    headerTitle:'Les Catégories'
+                    // header:() => (
+                    //     <View style={{borderWidth:2, borderColor:'rgb(0, 106, 179)', backgroundColor:'#fff', borderBottomLeftRadius:10, borderBottomRightRadius:10, borderTopWidth:0, elevation:5}}>
+                    //         <Text style={{textAlign:'center', fontSize:24, paddingVertical:8, color:'rgb(71, 167, 42)'}}>
+                    //             Les Catégories
+                    //         </Text>
+                    //     </View>
+                    // )
                 }}
             />
             <Tab.Screen
@@ -53,6 +54,7 @@ const HomeTab = () => {
                     tabBarIcon: ({focused}) => (
                         <MaterialCommunityIcons name="link-variant" size={27} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
                     ),
+                    headerShown:false
                 }}
             />
             <Tab.Screen
