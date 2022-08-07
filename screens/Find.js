@@ -263,7 +263,7 @@ const Find = ({navigation}) => {
                     autoScroll
                     onPress={closePickers}
                     flatListProps={{nestedScrollEnabled:true}}
-                    items={reportTypes.values.SD}
+                    items={reportTypes.values[category]||[]}
                     open={reportTypeOpen}
                     value={reportType}
                     setItems={setReportTypes}
@@ -377,7 +377,8 @@ export default Find;
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        paddingTop:20
+        paddingTop:20,
+        paddingHorizontal:'2.5%'
     },
     textInput:{
         color:'#000000',
@@ -389,12 +390,12 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         justifyContent:'center',
         backgroundColor:'#fff',
-        width:'95%',
+        width:'100%',
         alignSelf:'center'
     },
     dropDownInput:{
         marginVertical:2,
-        width:'95%',
+        // width:'95%',
         borderWidth:1,
         borderColor:'#878589',
         alignSelf:'center'

@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Menu from '../screens/Menu';
 import Find from '../screens/Find';
 import Upload from '../screens/Upload';
+import Users from '../screens/Users';
 
 const Stack = createStackNavigator()
 
@@ -30,6 +31,13 @@ const LinkStack = () => {
                 component={Upload}
                 options={{
                     headerTitle:'Charger un document'
+                }}
+            />
+            <Stack.Screen
+                name='Users'
+                component={Users}
+                options={{
+                    headerTitle:'Liste des utilisateurs'
                 }}
             />
         </Stack.Navigator>
