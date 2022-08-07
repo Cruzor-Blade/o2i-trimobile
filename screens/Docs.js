@@ -45,6 +45,7 @@ const Docs = ({navigation, route}) => {
         };
 
     }, []);
+    console.log('Waiting docs: ', route.params?.waitingDocs)
     return (
         <View style={styles.container}>
             {
@@ -59,7 +60,7 @@ const Docs = ({navigation, route}) => {
                     keyExtractor={item => item.id}
                     renderItem={({item}) => (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate('ViewDoc', {document:item})}
+                            onPress={() => navigation.navigate('ViewDoc', {document:item, waitingDoc:route.params?.waitingDocs})}
                             activeOpacity={0.9}
                             >
                             <View style={{...styles.docContainer, width:width/2.2, marginHorizontal:width/44}}>

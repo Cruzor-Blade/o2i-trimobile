@@ -73,7 +73,7 @@ const Home = ({navigation}) => {
         console.log("Docs on home screen: ", categoryDocs);
         navigation.navigate('DocsStack', {
             screen:'Docs',
-            params: {documents:categoryDocs}
+            params: {documents:categoryDocs, waitingDocs:false}
         });
     }
     return (

@@ -5,11 +5,13 @@ import UploadParams from '../assets/UploadParams';
 import RNFetchBlob from 'rn-fetch-blob';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage'; 
 
 // const RNFetchBlob = NativeModules.RNFetchBlob;
-const ViewDoc = ({route}) => {
+const ViewDoc = ({route, navigation}) => {
     const document = route.params.document;
+    const waitingDoc = route.params?.waitingDoc;
     const language = 'fr'
     const dropProperties = ['domain', 'OIType', 'reportType', 'period', 'fromValidityPeriod', 'toValidityPeriod'];
     const inputProperties = ['concernedTitles', 'editor', 'journal', 'validityPeriod', 'publicationDate'];
@@ -92,6 +94,36 @@ const ViewDoc = ({route}) => {
         return readableDate
     };
 
+    const onValidation= async () => {
+        let docWithoutId = document;
+        const docId = document.id;
+        delete docWithoutId.id;
+        
+        try {
+        await firestore().collection('resources/documents/validated').add(docWithoutId),
+        await firestore().doc(`resources/documents/waiting/${docId}`).delete()
+        } catch (error) {
+            console.log('Error during document validation: ', error);
+        };
+
+        navigation.setParams({waitingDoc:false})
+        console.log('Validated successfully');
+    }
+
+    const onInvalidation = async () => {
+        const docId = document.id;
+
+        try {
+            await firestore().doc(`resources/documents/waiting/${docId}`).delete(),
+            await Promise.allSettled([
+                storage().refFromURL(document.docUrl).delete()
+            ]);
+            navigation.goBack();
+        } catch (error) {
+            console.log('Error during document deletion ', error);
+        }
+    };
+
     const docTypes = {
         'pdf':'PDF',
         'doc':'Word',
@@ -100,9 +132,12 @@ const ViewDoc = ({route}) => {
         'pptx':'PowerPoint'
     };
 
+    // console.log('Waiting doc: ', route.params?.waitingDoc)
+
     return (
         <View style={styles.container}>
             <View style={{width:'100%'}}>
+                <Text style={{fontSize:20}}>Waiting doc: {route.params?.waitingDoc}</Text>
                 <View style={{flexDirection:'row'}}>
                     <FontAwesome5 color='red' style={{flex:1}} name='file-pdf' size={80} />
                     <View style={{flex:5}} >
@@ -148,15 +183,31 @@ const ViewDoc = ({route}) => {
                         } else {
                             return null;
                         }
-                        })}
-                        <Text style={styles.supInfo} >• Document chargé le {getReadableDate(createdAt)}</Text>
+                    })}
+                    <Text style={styles.supInfo} >• Document chargé le {getReadableDate(createdAt)}</Text>
+                </View>
+            </View>
+            {
+                waitingDoc?
+                <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+                    <TouchableOpacity onPress={onInvalidation}>
+                        <View style={{...styles.downloadButton, marginHorizontal:0, width:110, borderColor:'red'}}>
+                            <Text style={{color:'red', fontSize:18, fontWeight:'600'}}>Invalider</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onValidation}>
+                        <View style={{...styles.downloadButton, marginHorizontal:0, width:110, borderColor:'#1C7D2D'}}>
+                            <Text style={{color:'#1C7D2D', fontSize:18, fontWeight:'600'}}>Valider</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                :
+                <TouchableOpacity onPress={checkPermission}>
+                    <View style={styles.downloadButton}>
+                        <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>Télécharger</Text>
                     </View>
-                </View>
-            <TouchableOpacity onPress={checkPermission}>
-                <View style={styles.downloadButton}>
-                    <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>Télécharger</Text>
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            }
         </View>
     );
 };
