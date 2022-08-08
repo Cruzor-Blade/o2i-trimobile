@@ -57,7 +57,7 @@ const Menu = ({navigation}) => {
         console.log('Waiting docs: ', waitingDocsArr);
         navigation.jumpTo('DocsStack', {
             screen:'Docs',
-            params: {documents:waitingDocsArr, waitingDocs:true}
+            params: {documents:waitingDocsArr, waitingDocs:true, headerTitle:'Documents en attente'}
         });
     };
 

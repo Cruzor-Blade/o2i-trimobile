@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
+import UploadParams from '../assets/UploadParams';
 
 const categories = [
     {
@@ -71,11 +72,13 @@ const Home = ({navigation}) => {
     const seeDocs = async(category) => {
         const categoryDocs = await getDocs(category);
         console.log("Docs on home screen: ", categoryDocs);
+        const headerTitle =UploadParams['fr'].category.filter(item => item.value === category)[0].label;
         navigation.navigate('DocsStack', {
             screen:'Docs',
-            params: {documents:categoryDocs, waitingDocs:false}
+            params: {documents:categoryDocs, waitingDocs:false, headerTitle}
         });
-    }
+    };
+
     return (
         <View style={styles.container}>
             <FlatList

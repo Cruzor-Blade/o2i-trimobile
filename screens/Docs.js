@@ -43,9 +43,9 @@ const Docs = ({navigation, route}) => {
         if(!documents) {
             getDocs();
         };
-
+        
     }, []);
-    console.log('Waiting docs: ', route.params?.waitingDocs)
+    // console.log('Waiting docs: ', route.params?.waitingDocs)
     return (
         <View style={styles.container}>
             {

@@ -139,7 +139,7 @@ const Find = ({navigation}) => {
             
             navigation.navigate('DocsStack', {
                 screen:'Docs',
-                params: {documents:filteredDocs}
+                params: {documents:filteredDocs, headerTitle:'Résultats de la recherche'}
             });
         } else {
             setFormError('Choisissez une categorie');

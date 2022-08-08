@@ -13,8 +13,11 @@ const DocsStack = () => {
             <Stack.Screen
                 name="Docs"
                 component={Docs}
-                options={{
-                    headerTitle:'Documents'
+                options={({navigation, route}) => {
+                    console.log('Route params: ', route.params)
+                    return {
+                        headerTitle:route.params?.headerTitle||'Tous les documents'
+                    }
                 }}
             />
             <Stack.Screen
