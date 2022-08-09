@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import UploadParams from '../assets/UploadParams';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -10,13 +10,15 @@ import storage from '@react-native-firebase/storage';
 
 // const RNFetchBlob = NativeModules.RNFetchBlob;
 const ViewDoc = ({route, navigation}) => {
+    const [loading, setLoading] = useState(false);
+    
     const document = route.params.document;
     const waitingDoc = route.params?.waitingDoc;
     const language = 'fr'
     const dropProperties = ['domain', 'OIType', 'reportType', 'period', 'fromValidityPeriod', 'toValidityPeriod'];
     const inputProperties = ['concernedTitles', 'editor', 'journal', 'validityPeriod', 'publicationDate'];
     
-    const downloadImage = () => {
+    const downloadImage = async () => {
         const getExtension = (filename) => {
             return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined ;
         }
@@ -45,7 +47,7 @@ const ViewDoc = ({route, navigation}) => {
           }
         }
 
-        config(options)
+        await config(options)
         .fetch('GET', DocURI)
         .then((res) => {
           //Showing alert for successful download
@@ -63,64 +65,77 @@ const ViewDoc = ({route, navigation}) => {
     }
 
     const checkPermission = async () => {
+        setLoading(true);
         if (Platform.OS === 'ios') {
-          downloadImage();
+          await downloadImage();
         } else {
             try {
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                     {
-                        title:"Acces au stockage",
-                        message:"Authorisez l'acces au stockage"
+                        title:"Accès au stockage",
+                        message:"Authorisez l'accès au stockage"
                     }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 console.log('Storage Permission Granted');
-                downloadImage();
+                await downloadImage();
             } else {
-              alert("l'acces au stockage n'a pas ete attribue");
+              alert("l'accès au stockage n'a pas été attribué");
             }
             } catch (error) {
                 console.warn(error);
             }
         }
+
+        setLoading(false);
     }
     // console.log('document created at: ', new Date(document.createdAt.toDate()) )
     const createdAt = document.createdAt.toDate();
 
     const getReadableDate = (date) => {
-        const monthsArray = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        const monthsArray = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
         const readableDate = date.getDate() + ' ' + monthsArray[date.getMonth()]+' '+date.getFullYear();
         return readableDate
     };
 
     const onValidation= async () => {
-        let docWithoutId = document;
-        const docId = document.id;
-        delete docWithoutId.id;
-        
-        try {
-        await firestore().collection('resources/documents/validated').add(docWithoutId),
-        await firestore().doc(`resources/documents/waiting/${docId}`).delete()
-        } catch (error) {
-            console.log('Error during document validation: ', error);
-        };
+        if(!loading) {
+            setLoading(true);
 
-        navigation.setParams({waitingDoc:false})
-        console.log('Validated successfully');
+            let docWithoutId = document;
+            const docId = document.id;
+            delete docWithoutId.id;
+            
+            try {
+            await firestore().collection('resources/documents/validated').add(docWithoutId);
+            await firestore().doc(`resources/documents/waiting/${docId}`).delete();
+            } catch (error) {
+                console.log('Error during document validation: ', error);
+            };
+    
+            await navigation.setParams({waitingDoc:false});
+            console.log('Validated successfully');
+        
+            setLoading(false);
+        }
     }
 
     const onInvalidation = async () => {
-        const docId = document.id;
-
-        try {
-            await firestore().doc(`resources/documents/waiting/${docId}`).delete(),
-            await Promise.allSettled([
-                storage().refFromURL(document.docUrl).delete()
-            ]);
-            navigation.goBack();
-        } catch (error) {
-            console.log('Error during document deletion ', error);
+        if(!loading) {
+            setLoading(true);
+            const docId = document.id;
+    
+            try {
+                await firestore().doc(`resources/documents/waiting/${docId}`).delete(),
+                await Promise.allSettled([
+                    storage().refFromURL(document.docUrl).delete()
+                ]);
+                navigation.goBack();
+            } catch (error) {
+                console.log('Error during document deletion ', error);
+            }
+            setLoading(false);
         }
     };
 
@@ -207,6 +222,12 @@ const ViewDoc = ({route, navigation}) => {
                         <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>Télécharger</Text>
                     </View>
                 </TouchableOpacity>
+            }
+            {
+                    loading ?
+                    <ActivityIndicator size={30} color='rgb(0, 106, 179)'/>
+                    :
+                    null
             }
         </View>
     );

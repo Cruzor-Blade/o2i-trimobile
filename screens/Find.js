@@ -178,6 +178,8 @@ const Find = ({navigation}) => {
                     zIndex={10000}
                     zIndexInverse={1000}
                     placeholder='country'
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 {
                     country ? (
@@ -196,6 +198,8 @@ const Find = ({navigation}) => {
                             placeholder='Organisation'
                             zIndex={9000}
                             zIndexInverse={2000}
+                            selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                            labelStyle={{color:'rgb(0, 106, 179)'}}
                         />
                     )
                     :
@@ -215,6 +219,8 @@ const Find = ({navigation}) => {
                     placeholder='Period'
                     zIndex={8000}
                     zIndexInverse={3000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 
                 <DropDownPicker
@@ -231,6 +237,8 @@ const Find = ({navigation}) => {
                     placeholder='Category'
                     zIndex={7000}
                     zIndexInverse={4000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -246,6 +254,8 @@ const Find = ({navigation}) => {
                     placeholder='Domain'
                     zIndex={6000}
                     zIndexInverse={5000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -261,6 +271,8 @@ const Find = ({navigation}) => {
                     placeholder='OI Type'
                     zIndex={5000}
                     zIndexInverse={6000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -276,6 +288,8 @@ const Find = ({navigation}) => {
                     placeholder='Report Type'
                     zIndex={4000}
                     zIndexInverse={7000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <TextInput
                     onFocus={closePickers}
@@ -310,7 +324,7 @@ const Find = ({navigation}) => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:fromValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>
+                        <Text style={{color:fromValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>
                             {
                             fromValidityPeriod? fromValidityPeriod.toLocaleString()
                                 :
@@ -328,7 +342,7 @@ const Find = ({navigation}) => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:toValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:toValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             toValidityPeriod? toValidityPeriod.toLocaleString()
                             :
                             'Valid until'}
@@ -345,7 +359,7 @@ const Find = ({navigation}) => {
                     style={isInputAllowed('publicationDate')?{...styles.textInput} : {display:'none'}}
                         
                     >
-                        <Text style={{color:publicationDate?'#000':'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:publicationDate?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             publicationDate? publicationDate.toLocaleString()
                             :
                             'Publication date'}
@@ -384,7 +398,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:'2.5%'
     },
     textInput:{
-        color:'#000000',
+        color:'rgb(0, 106, 179)',
         height:50,
         borderRadius:8,
         borderWidth:1,

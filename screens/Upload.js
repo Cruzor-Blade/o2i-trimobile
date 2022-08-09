@@ -233,6 +233,8 @@ const Upload = () => {
                     zIndex={10000}
                     zIndexInverse={1000}
                     placeholder='country'
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 {
                     country ? (
@@ -251,6 +253,8 @@ const Upload = () => {
                             placeholder='Organisation'
                             zIndex={9000}
                             zIndexInverse={2000}
+                            selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                            labelStyle={{color:'rgb(0, 106, 179)'}}
                         />
                     )
                     :
@@ -270,6 +274,8 @@ const Upload = () => {
                     placeholder='Period'
                     zIndex={8000}
                     zIndexInverse={3000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 
                 <DropDownPicker
@@ -286,6 +292,8 @@ const Upload = () => {
                     placeholder='Category'
                     zIndex={7000}
                     zIndexInverse={4000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -301,6 +309,8 @@ const Upload = () => {
                     placeholder='Domain'
                     zIndex={6000}
                     zIndexInverse={5000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -316,6 +326,8 @@ const Upload = () => {
                     placeholder='OI Type'
                     zIndex={5000}
                     zIndexInverse={6000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <DropDownPicker
                     autoScroll
@@ -331,6 +343,8 @@ const Upload = () => {
                     placeholder='Report Type'
                     zIndex={4000}
                     zIndexInverse={7000}
+                    selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
+                    labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
                 <TextInput
                     onFocus={closePickers}
@@ -365,7 +379,7 @@ const Upload = () => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:fromValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>
+                        <Text style={{color:fromValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>
                             {
                             fromValidityPeriod? fromValidityPeriod.toLocaleString()
                                 :
@@ -383,7 +397,7 @@ const Upload = () => {
                     <View
                         style={isInputAllowed('validityPeriod') ?{...styles.textInput}:{display:'none'}}
                     >
-                        <Text style={{color:toValidityPeriod?'#000':'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:toValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             toValidityPeriod? toValidityPeriod.toLocaleString()
                             :
                             'Valid until'}
@@ -400,7 +414,7 @@ const Upload = () => {
                     style={isInputAllowed('publicationDate')?{...styles.textInput} : {display:'none'}}
                         
                     >
-                        <Text style={{color:publicationDate?'#000':'rgba(0,0,0,0.5)'}}>{
+                        <Text style={{color:publicationDate?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             publicationDate? publicationDate.toLocaleString()
                             :
                             'Publication date'}
