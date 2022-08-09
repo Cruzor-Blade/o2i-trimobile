@@ -15,8 +15,11 @@ const LinkStack = () => {
             <Stack.Screen
                 name='Menu'
                 component={Menu}
-                options={{
-                    headerTitle:'Liens'
+                options={({route}) => {
+                    return  {
+                        headerTitle:'Liens',
+                        headerRight:() => route.params?.loading?<ActivityIndicator color='rgb(0, 106, 179)' size={26} style={{marginRight:15, marginLeft:10}} />:null
+                    }
                 }}
             />
             <Stack.Screen
@@ -36,8 +39,11 @@ const LinkStack = () => {
             <Stack.Screen
                 name='Users'
                 component={Users}
-                options={{
-                    headerTitle:'Liste des utilisateurs'
+                options={({route}) => {
+                    return  {
+                        headerTitle:'Liste des utilisateurs',
+                        headerRight:() => route.params?.loading?<ActivityIndicator color='rgb(0, 106, 179)' size={26} style={{marginRight:15, marginLeft:10}} />:null
+                    }
                 }}
             />
         </Stack.Navigator>

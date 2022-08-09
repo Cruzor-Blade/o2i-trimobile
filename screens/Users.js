@@ -15,6 +15,8 @@ const Users = ({route, navigation}) =>{
     };
 
     const promoteAdmin = async(id) => {
+        await navigation.setParams({loading:true});
+
         await firestore()
         .doc(`admins/${id}`)
         .set({admin:true, superadmin:false, isAdminSince: new Date()});
@@ -29,19 +31,19 @@ const Users = ({route, navigation}) =>{
             adminsArr.push({...doc.data(), id: doc.id})    
         });
 
-        navigation.setParams({admins:adminsArr});
+        navigation.setParams({admins:adminsArr, loading:false});
     };
 
 
     const removeAdmin = async(id) => {
+        await navigation.setParams({loading:true});
         await firestore()
         .doc(`admins/${id}`)
         .delete();
         
-        navigation.setParams({admins: admins.filter(member => member.id != id)})
+        navigation.setParams({admins: admins.filter(member => member.id != id), loading:false});
     }
 
-    console.log('Admins: ', admins);
     return (
         <View style={styles.container}>
             <FlatList

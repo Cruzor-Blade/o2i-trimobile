@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
 import More from "../screens/More";
@@ -22,18 +22,14 @@ const HomeTab = () => {
             <Tab.Screen
                 name="Home"
                 component={Home}
-                options={{
-                    tabBarIcon: ({focused}) => (
-                        <Octicons name="home" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
-                    ),
-                    headerTitle:'Les Catégories'
-                    // header:() => (
-                    //     <View style={{borderWidth:2, borderColor:'rgb(0, 106, 179)', backgroundColor:'#fff', borderBottomLeftRadius:10, borderBottomRightRadius:10, borderTopWidth:0, elevation:5}}>
-                    //         <Text style={{textAlign:'center', fontSize:24, paddingVertical:8, color:'rgb(71, 167, 42)'}}>
-                    //             Les Catégories
-                    //         </Text>
-                    //     </View>
-                    // )
+                options={({route}) => {
+                    return {
+                        tabBarIcon: ({focused}) => (
+                            <Octicons name="home" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
+                        ),
+                        headerTitle:'Les Catégories',
+                        headerRight:() => route.params?.loading?<ActivityIndicator color='rgb(0, 106, 179)' size={26} style={{marginRight:15, marginLeft:10}} />:null
+                    }
                 }}
             />
             <Tab.Screen
@@ -42,7 +38,6 @@ const HomeTab = () => {
                 options={{
                     tabBarIcon: ({focused}) => (
                         <Entypo name="archive" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
-                        // <MaterialCommunityIcons name="bookmark-multiple-outline" size={27} color={focused ? '#3f37c9' : '#666666'} />
                     ),
                     headerShown:false
                 }}

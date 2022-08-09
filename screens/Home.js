@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import LinearGradient from 'react-native-linear-gradient';
 import UploadParams from '../assets/UploadParams';
 
 const categories = [
@@ -61,7 +60,7 @@ const Home = ({navigation}) => {
         .doc('documents')
         .collection('validated')
         .where('category', '==', category)
-        .get()
+        .get();
 
         documents.forEach(document => {
             docsArray.push({...document.data(), id:document.id});
@@ -70,9 +69,13 @@ const Home = ({navigation}) => {
     };
     
     const seeDocs = async(category) => {
+        await navigation.setParams({loading:true});
+        
         const categoryDocs = await getDocs(category);
-        console.log("Docs on home screen: ", categoryDocs);
-        const headerTitle =UploadParams['fr'].category.filter(item => item.value === category)[0].label;
+        
+        const headerTitle = UploadParams['fr'].category.filter(item => item.value === category)[0].label;
+        await navigation.setParams({loading:false});
+
         navigation.navigate('DocsStack', {
             screen:'Docs',
             params: {documents:categoryDocs, waitingDocs:false, headerTitle}

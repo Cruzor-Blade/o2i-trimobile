@@ -20,6 +20,8 @@ const Menu = ({navigation}) => {
     };
 
     const getUsers = async() => {
+        await navigation.setParams({loading:true});
+
         let usersArr = [];
         const querySnapshot = await firestore()
             .collection("users")
@@ -39,10 +41,13 @@ const Menu = ({navigation}) => {
             adminsArr.push({...doc.data(), id: doc.id})    
         })
 
+        await navigation.setParams({loading:false});
         navigation.navigate('Users', {users:usersArr, admins:adminsArr})
     };
 
     const getWaitingDocs = async() => {
+        await navigation.setParams({loading:true});
+
         let waitingDocsArr = [];
         const querySnapshot =
             await firestore()
@@ -54,7 +59,7 @@ const Menu = ({navigation}) => {
                 waitingDocsArr.push({...doc.data(), id: doc.id})
             });
             
-        console.log('Waiting docs: ', waitingDocsArr);
+        await navigation.setParams({loading:false});
         navigation.jumpTo('DocsStack', {
             screen:'Docs',
             params: {documents:waitingDocsArr, waitingDocs:true, headerTitle:'Documents en attente'}

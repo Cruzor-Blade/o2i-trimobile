@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import CustomInput from '../components/CustomInput';
@@ -15,17 +15,18 @@ const SignUp = ({navigation}) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     async function SignUp() {
+        setLoading(true);
         const resultAuth = await auth().createUserWithEmailAndPassword(email, password);
         const currentUserId = resultAuth.user.uid;
-        console.log('Current user id: ', currentUserId);
         
         await firestore()
         .doc(`users/${currentUserId}`)
         .set({registeredOn: new Date(), email, phone:phoneNum});
 
-        console.log('Account created successfully! ');
+        setLoading(false);
     };
 
     return (
@@ -66,6 +67,12 @@ const SignUp = ({navigation}) => {
             <TouchableOpacity style={styles.logger} onPress={SignUp}>
                     <Text style={{color:'#fff', fontWeight:'600', fontSize:16}}>Créer le compte</Text>
             </TouchableOpacity>
+            {
+                loading ?
+                    <ActivityIndicator color='rgb(0, 106, 179)' size={26} />
+                :
+                    null
+            }
             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
                 <Text style={{color:'#000', marginHorizontal:80, textAlign:'center'}}>
                     Déjà un compte? <Text style={{color:'#1C7D2D', fontWeight:'500'}}>Connectez vous plutôt</Text>

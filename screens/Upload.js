@@ -437,7 +437,7 @@ const Upload = () => {
                 </View>
                 {
                     loading ?
-                    <ActivityIndicator size={30} color='#00ff00'/>
+                    <ActivityIndicator size={30} color='rgb(0, 106, 179)'/>
                     :
                     null
                 }

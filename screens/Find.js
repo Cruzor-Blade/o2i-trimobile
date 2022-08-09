@@ -133,10 +133,13 @@ const Find = ({navigation}) => {
             if (isInputAllowed('publicationDate') && publicationDate) filterObj.publicationDate = (docs) => docs.filter(doc => doc.publicationDate == publicationDate);
 
             
+            setLoading(true);
+
             const resultDocs = await getCorrespondingDocs();
             let filteredDocs = resultDocs;
             Object.keys(filterObj).forEach(key => filteredDocs= filterObj[key](filteredDocs));
             
+            setLoading(false);
             navigation.navigate('DocsStack', {
                 screen:'Docs',
                 params: {documents:filteredDocs, headerTitle:'Résultats de la recherche'}
@@ -365,7 +368,7 @@ const Find = ({navigation}) => {
                 </View>
                 {
                     loading ?
-                    <ActivityIndicator size={30} color='#00ff00'/>
+                    <ActivityIndicator size={30} color='rgb(0, 106, 179)'/>
                     :
                     null
                 }
