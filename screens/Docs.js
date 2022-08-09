@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, ActivityIndicator, Image, ImageBackground} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import firestore from '@react-native-firebase/firestore';
 
@@ -58,6 +58,12 @@ const Docs = ({navigation, route}) => {
                     data ={documents}
                     numColumns={2}
                     keyExtractor={item => item.id}
+                    ListEmptyComponent={() => (
+                        <View style={{alignItems:'center', marginTop:120}}>
+                            <Text style={{marginHorizontal:20, fontSize:19, color:'#000', textAlign:'center'}}>Aucun document correspondant pour le moment.</Text>
+                            <Image source={require('../assets/nofile.png')} style={{width:250, height:320, resizeMode:'contain', tintColor:'#aaaaaa'}}/>
+                        </View>
+                    )}
                     renderItem={({item}) => (
                         <TouchableOpacity
                             onPress={() => navigation.navigate('ViewDoc', {document:item, waitingDoc:route.params?.waitingDocs})}
