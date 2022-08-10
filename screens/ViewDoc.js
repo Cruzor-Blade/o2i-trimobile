@@ -1,5 +1,5 @@
-import React, {useContext, useState} from 'react';
-import {View, Text, Linking, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import UploadParams from '../assets/UploadParams';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -9,17 +9,39 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage'; 
 import { LangContext } from '../context/LangContext';
 import mime from 'mime-types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const RNFetchBlob = NativeModules.RNFetchBlob;
 const ViewDoc = ({route, navigation}) => {
-    const {language} = useContext(LangContext);
-    const [loading, setLoading] = useState(false);
-    
     const document = route.params.document;
     const waitingDoc = route.params?.waitingDoc;
+
+    const {language} = useContext(LangContext);
+    const [loading, setLoading] = useState(false);
+    const [docSavedData, setDocSavedData] = useState(null);
+
+    const {config, fs, android} = RNFetchBlob;
+
     const dropProperties = ['domain', 'OIType', 'reportType', 'period', 'fromValidityPeriod', 'toValidityPeriod'];
     const inputProperties = ['concernedTitles', 'editor', 'journal', 'validityPeriod', 'publicationDate'];
     
+    const getSavedDocs = async() => {
+        let docs = await JSON.parse(await AsyncStorage.getItem('storedDocs'));
+        
+        if(docs && docs[document.id]){
+            if(fs.exists(docs[document.id].path)===true) { //fs.exists() may return an object if the path is not valid. Make sure that it is true
+                setDocSavedData(docs[document.id]);
+            } else {
+                docs[document.id] = undefined;
+                AsyncStorage.setItem('storedDocs', JSON.stringify(docs));
+            }
+        }
+    }
+
+    const openImage = () => {
+        android.actionViewIntent(docSavedData.path, docSavedData.type);
+    }
+
     const downloadImage = async () => {
         const getExtension = (filename) => {
             return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined ;
@@ -31,7 +53,7 @@ const ViewDoc = ({route, navigation}) => {
         ext = '.' + ext[0];
 
         //Get config and fs from RNFetchBlob
-        const {config, fs, android} = RNFetchBlob;
+        
         let DownloadDir = fs.dirs.DownloadDir;
         let filePath = DownloadDir+ '/o2i-tri/O2ITRI_'+ document.title + '_'+
             Math.floor(date.getTime() + date.getSeconds()/2);
@@ -51,11 +73,15 @@ const ViewDoc = ({route, navigation}) => {
 
         await config(options)
         .fetch('GET', DocURI)
-        .then((res) => {
-          //Showing alert for successful download
-        //   alert(language==='fr'?"Document télécharge avec succès":'Document downloaded successfully')
-            // console.log('Response', JSON.stringify(res));
-            // console.log('File path: ', filePath);
+        .then(async(res) => {
+            let stored = JSON.parse(await AsyncStorage.getItem('storedDocs'));
+            if(!stored) {
+                stored={};
+            }
+            console.log('Document id: ', document.id);
+            stored[document.id] ={path:res.path(), type:mime.lookup(document.type)}
+            AsyncStorage.setItem('storedDocs', JSON.stringify(stored));
+            setDocSavedData({path:res.path(), type:mime.lookup(document.type)});
             android.actionViewIntent(res.path(), mime.lookup(document.type));
             
         })
@@ -154,8 +180,9 @@ const ViewDoc = ({route, navigation}) => {
         'xlsx':'Excel'
     };
 
-    // console.log('Waiting doc: ', route.params?.waitingDoc)
-
+    useEffect(() => {
+        getSavedDocs();
+    }, [])
     return (
         <View style={styles.container}>
             <View style={{width:'100%'}}>
@@ -223,11 +250,18 @@ const ViewDoc = ({route, navigation}) => {
                     </TouchableOpacity>
                 </View>
                 :
-                <TouchableOpacity onPress={checkPermission}>
-                    <View style={styles.downloadButton}>
-                        <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Télécharger':'Download'}</Text>
-                    </View>
-                </TouchableOpacity>
+                docSavedData?
+                    <TouchableOpacity onPress={openImage}>
+                        <View style={styles.downloadButton}>
+                            <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Ouvrir':'Open'}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity onPress={checkPermission}>
+                        <View style={styles.downloadButton}>
+                            <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Télécharger':'Download'}</Text>
+                        </View>
+                    </TouchableOpacity>
             }
             {
                     loading ?

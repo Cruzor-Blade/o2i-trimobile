@@ -112,7 +112,9 @@ const Upload = () => {
                 DocumentTypes.doc,
                 DocumentTypes.docx,
                 DocumentTypes.ppt,
-                DocumentTypes.pptx
+                DocumentTypes.pptx,
+                DocumentTypes.xls,
+                DocumentTypes.xlsx
             ],
             copyTo:'cachesDirectory'
         });
