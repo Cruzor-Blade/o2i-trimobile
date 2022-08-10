@@ -29,7 +29,7 @@ const HomeTab = () => {
                         tabBarIcon: ({focused}) => (
                             <Octicons name="home" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
                         ),
-                        headerTitle:language==='fr'? 'Les Catégories':'The Categories',
+                        headerTitle:language==='fr'? 'Les Catégories':'Categories',
                         headerRight:() => route.params?.loading?<ActivityIndicator color='rgb(0, 106, 179)' size={26} style={{marginRight:15, marginLeft:10}} />:null
                     }
                 }}
