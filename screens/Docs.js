@@ -1,17 +1,25 @@
-import React, {useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, ActivityIndicator, Image, ImageBackground} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import firestore from '@react-native-firebase/firestore';
+import { LangContext } from '../context/LangContext';
 
 const Docs = ({navigation, route}) => {
     let paramsDocs = route.params?.documents||null;
+    
+    const {language} = useContext(LangContext);
     const [documents, setDocuments] = useState(paramsDocs);
     const [loading, setLoading] = useState(false);
     
     const { width } = Dimensions.get('window');
     const getReadableDate = (date) => {
-        const monthsArray = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        const readableDate = date.getDate() + ' ' + monthsArray[date.getMonth()]+' '+date.getFullYear();
+        const months = {
+                        en:['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September','October', 'November', 'December'],
+                        fr:['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
+                            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+                        };
+        const readableDate = date.getDate() + ' ' + months[language][date.getMonth()]+' '+date.getFullYear();
         return readableDate
     };
 
@@ -35,7 +43,6 @@ const Docs = ({navigation, route}) => {
     //Force state update after navigation if there are documents in the params
     //and clear the documents params to avoid rerender (since documents params would still exists if not)
     if(route.params?.documents) {
-        console.log('Route params: ', route.params?.documents)
         setDocuments(route.params?.documents);
         route.params.documents = undefined;
     }
@@ -60,7 +67,9 @@ const Docs = ({navigation, route}) => {
                     keyExtractor={item => item.id}
                     ListEmptyComponent={() => (
                         <View style={{alignItems:'center', marginTop:120}}>
-                            <Text style={{marginHorizontal:20, fontSize:19, color:'#000', textAlign:'center'}}>Aucun document correspondant pour le moment.</Text>
+                            <Text style={{marginHorizontal:20, fontSize:19, color:'#000', textAlign:'center'}}>
+                                {language==='fr'?'Aucun document correspondant pour le moment.':'No corresponding document for the moment.'}
+                            </Text>
                             <Image source={require('../assets/nofile.png')} style={{width:250, height:320, resizeMode:'contain', tintColor:'#aaaaaa'}}/>
                         </View>
                     )}

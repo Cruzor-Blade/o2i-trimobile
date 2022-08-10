@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import LangContextProvider from './context/LangContext';
 import AuthContextProvider from './context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import Routes from './navigation/Routes';
@@ -9,11 +10,13 @@ const App = () => {
     RNBootSplash.hide({fade:true})
   }, []);
   return (
-    <AuthContextProvider>
-      <NavigationContainer>
-        <Routes/>
-      </NavigationContainer>
-    </AuthContextProvider>
+    <LangContextProvider>
+      <AuthContextProvider>
+        <NavigationContainer>
+          <Routes/>
+        </NavigationContainer>
+      </AuthContextProvider>
+    </LangContextProvider>
 
   )
 }

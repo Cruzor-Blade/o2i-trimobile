@@ -6,9 +6,12 @@ import CustomInput from '../components/CustomInput';
 import Foundation from 'react-native-vector-icons/Foundation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { LangContext } from '../context/LangContext';
 
 
 const SignUp = ({navigation}) => {
+    const {language} = useContext(LangContext);
+    
     const [phoneNum, setPhoneNum] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -46,17 +49,17 @@ const SignUp = ({navigation}) => {
         
             } catch (error) {
                 if (error.code == "auth/network-request-failed") {
-                    setApiError('Problème de connexion');
+                    setApiError(language==='fr'?'Problème de connexion':'Network error');
                 } else if (error.code == "auth/too-many-requests") {
-                    setApiError("Trop de tentatives. Veuillez réessayer ultérieurement.");
+                    setApiError(language==='fr'?"Trop de tentatives. Veuillez réessayer ultérieurement.":'Too many trials. Please come back later');
                 } else if (error.code == "auth/wrong-password") {
-                    setApiError("Le mot de passe est incorrect");
+                    setApiError(language==='fr'?"Le mot de passe est incorrect":'The password is incorrect');
                 } else if (error.code == "auth/user-disabled") {
-                    setApiError("Cet utilisateur est suspendu.");
+                    setApiError(language==='fr'?"Cet utilisateur est suspendu.":'The account have been suspended');
                 } else if (error.code == "auth/user-not-found") {
-                    setApiError("Ce compte utilisateur n'existe pas.");
+                    setApiError(language==='fr'?"Ce compte utilisateur n'existe pas.":"This user doesn't exist");
                 } else {
-                    setApiError("Une erreur est survenue.");
+                    setApiError(language==='fr'?"Une erreur est survenue.":'An error occured')
                 }
             } 
             setLoading(false);
@@ -70,18 +73,19 @@ const SignUp = ({navigation}) => {
     return (
         <View style={styles.container}>
             <Text style={{fontSize:24, color:'#000', marginHorizontal:30, textAlign:'center', marginBottom:35}}>
-                Créez un compte sur la plateforme <Text style={{color:'#1C7D2D', fontWeight:'500'}}>O2I-TRI</Text>
+                {language==='fr'?'Créez un compte sur la plateforme':'Create an account on the platform'}
+                <Text style={{color:'#1C7D2D', fontWeight:'500'}}>O2I-TRI</Text>
             </Text>
             <CustomInput
                 IconComponent={() => <Foundation size={30} name='telephone' color='#47A72A' />}
                 keyboardType='phone-pad'
                 value={phoneNum}
-                placeholder='numero de téléphone (format international)'
+                placeholder={language==='fr'?'numero de téléphone (format international)':'phone number (international format)'}
                 onChangeText={(phoneNum) => setPhoneNum('+' + phoneNum.replace(/[^0-9]/g, ''))}
             />
 
             {!(firstAttepmpt || phoneCond)?
-                <Text style={styles.error}>Le numero de telephone est incorrect</Text>
+                <Text style={styles.error}>{language==='fr'?'Le numero de telephone est incorrect':'Phone number is incorrect'}</Text>
                 :
                 null
             }
@@ -89,11 +93,11 @@ const SignUp = ({navigation}) => {
                 IconComponent={() => <AntDesign size={30} name='mail' color='#47A72A' />}
                 keyboardType='email-address'
                 value={email}
-                placeholder='addresse email'
+                placeholder={language==='fr'?'addresse email':'email address'}
                 onChangeText={(email) => setEmail(email)}
             />
             {!(firstAttepmpt || emailCond)?
-                <Text style={styles.error}>L'addresse email est incorrecte</Text>
+                <Text style={styles.error}>{language==='fr'?"L'addresse email est incorrecte":'The email address is incorrect'}</Text>
                 :
                 null
             }
@@ -102,11 +106,11 @@ const SignUp = ({navigation}) => {
                 secureTextEntry={!showPassword}
                 onIconPress={() => setShowPassword(!showPassword)}
                 value={password}
-                placeholder='mot de passe'
+                placeholder={language==='fr'?'mot de passe':'password'}
                 onChangeText={(password) => setPassword(password)}
             />
             {!(firstAttepmpt || passwordCond)?
-                <Text style={styles.error}>Le mot de passe doit avoir au moins 8 charactères</Text>
+                <Text style={styles.error}>{language==='fr'?'Le mot de passe doit avoir au moins 8 charactères':'Password should have at least 8 characters'}</Text>
                 :
                 null
             }
@@ -115,16 +119,16 @@ const SignUp = ({navigation}) => {
                 secureTextEntry={!showConfirmPassword}
                 onIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 value={confirmPassword}
-                placeholder='confirmez le numero de téléphone'
+                placeholder={language==='fr'?'confirmez le mot de passe':'confirm password'}
                 onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
             />
             {!(firstAttepmpt || confirmPasswordCond)?
-                <Text style={styles.error}>Confirmez le mot de passe</Text>
+                <Text style={styles.error}>{language==='fr'?'Les mots de passe ne correspondent pas':'Passwords do not match'}</Text>
                 :
                 null
             }
             <TouchableOpacity style={styles.logger} onPress={SignUp}>
-                    <Text style={{color:'#fff', fontWeight:'600', fontSize:16}}>Créer le compte</Text>
+                    <Text style={{color:'#fff', fontWeight:'600', fontSize:16}}>{language==='fr'?'Créer le compte':'Sign Up'}</Text>
             </TouchableOpacity>
             {
                 apiError?
@@ -140,7 +144,8 @@ const SignUp = ({navigation}) => {
             }
             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
                 <Text style={{color:'#000', marginHorizontal:80, textAlign:'center'}}>
-                    Déjà un compte? <Text style={{color:'#1C7D2D', fontWeight:'500'}}>Connectez vous plutôt</Text>
+                    {language==='fr'?'Déjà un compte?':'Already have an account?'}
+                    <Text style={{color:'#1C7D2D', fontWeight:'500'}}>{language==='fr'?'Connectez vous plutôt':'Sign in instead'}</Text>
                 </Text>
             </TouchableOpacity>
         </View>

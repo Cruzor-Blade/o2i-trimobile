@@ -1,9 +1,58 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import UploadParams from '../assets/UploadParams';
+import { LangContext } from '../context/LangContext';
 
-const categories = [
+const categories = {
+    en:[
+        {
+            title:'Strategic documents',
+            description:"Action plan, strategy, charter...",
+            value:'SD'
+        },
+        {
+            title:'Contratcual documents',
+            description:"Contract, protocol of agreement, mandate/terms of reference of the OI, act creating CDLs",
+            value:'CD'
+        },
+        {
+            title:"OI mission reports",
+            description:"Conjoints, independent, accompanied, verification and others missions",
+            value:'OI-R'
+        },
+        {
+            title:"OI technical synthesis",
+            description:"Analysis note, information note, synthese note of OI reports",
+            value:'OI-TS'
+        },
+        {
+            title:"Periodical report",
+            description:"Thematic report, activity and narrative report",
+            value:'PR'
+        },
+        {
+            title:"OI Manual / guide",
+            description:"OIEs, OIMs...",
+            value:'OI-G'
+        },
+        {
+            title:"'CR/PV Lecture commitee/ Ad-hoc commitee'",
+            description:"",
+            value:'CR-PV'
+        },
+        {
+            title:"Press Articles",
+            description:"Workshop, press conference, general information",
+            value:'PA'
+        },
+        {
+            title:"Scientific publications on the OI",
+            description:"Thematic",
+            value:'SP-OI'
+        }
+    ],
+    fr:[
     {
         title:'Documents stratégiques',
         description:"Plan d'action, stratégie, charte...",
@@ -49,9 +98,11 @@ const categories = [
         description:"Thématique",
         value:'SP-OI'
     }
-];
+]};
 
 const Home = ({navigation}) => {
+    const {language} = useContext(LangContext);
+
     const getDocs = async (category) => {
         console.log('Category: ', category)
         let docsArray = [];
@@ -73,7 +124,7 @@ const Home = ({navigation}) => {
         
         const categoryDocs = await getDocs(category);
         
-        const headerTitle = UploadParams['fr'].category.filter(item => item.value === category)[0].label;
+        const headerTitle = UploadParams[language].category.filter(item => item.value === category)[0].label;
         await navigation.setParams({loading:false});
 
         navigation.navigate('DocsStack', {
@@ -91,7 +142,7 @@ const Home = ({navigation}) => {
                 //     </View>
                 // }
                 // stickyHeaderIndices={[0]}
-                data={categories}
+                data={categories[language]}
                 keyExtractor={item => item.title}
                 renderItem={({item}) => (
                     <TouchableOpacity

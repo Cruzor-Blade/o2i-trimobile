@@ -1,11 +1,14 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useContext, useState, useMemo, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, Platform, ActivityIndicator, TouchableOpacity} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadParams from '../assets/UploadParams';
 import firestore from '@react-native-firebase/firestore';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { LangContext } from '../context/LangContext';
 
 const Find = ({navigation}) => {
+    const {language} = useContext(LangContext);
+    
     const [title, setTitle] = useState('');
     const [concernedTitles, setConcernedtitles] = useState('');
     const [editor, setEditor] = useState('');
@@ -16,14 +19,13 @@ const Find = ({navigation}) => {
     
     const [country, setCountry] = useState(null);
     const [countryOpen, setCountryOpen] = useState(false);
-    const [countries, setCountries] = useState(UploadParams.fr.country);
+    const [countries, setCountries] = useState(UploadParams[language].country);
 
     const [organisation, setOrganisation] = useState(null);
     const [organisationOpen, setOrganisationOpen] = useState(false);
-    const [organisations, setOrganisations] = useState(UploadParams.fr.organisation);
+    const [organisations, setOrganisations] = useState(UploadParams[language].organisation);
 
-    let periodOptions = [
-        ];
+    let periodOptions = [];
     for (let i =2010; i< 2035; i++){
         periodOptions.push({label: i.toString(), value:i})
     };
@@ -33,19 +35,19 @@ const Find = ({navigation}) => {
 
     const [category, setCategory] = useState(null);
     const [categoryOpen, setCategoryOpen] = useState(false);
-    const [categories, setCategories] = useState(UploadParams.fr.category);
+    const [categories, setCategories] = useState(UploadParams[language].category);
 
     const [domain, setDomain] = useState(null);
     const [domainOpen, setDomainOpen] = useState(false);
-    const [domains, setDomains] = useState(UploadParams.fr.domain);
+    const [domains, setDomains] = useState(UploadParams[language].domain);
 
     const [OIType, setOIType] = useState(null);
     const [OITypeOpen, setOITypeOpen] = useState(false);
-    const [OITypes, setOITypes] = useState(UploadParams.fr.OIType);
+    const [OITypes, setOITypes] = useState(UploadParams[language].OIType);
     
     const [reportType, setReportType] = useState(null);
     const [reportTypeOpen, setReportTypeOpen] = useState(false);
-    const [reportTypes, setReportTypes] = useState(UploadParams.fr.reportType);
+    const [reportTypes, setReportTypes] = useState(UploadParams[language].reportType);
      
         
     const [loading, setLoading] = useState(false);
@@ -142,10 +144,10 @@ const Find = ({navigation}) => {
             setLoading(false);
             navigation.navigate('DocsStack', {
                 screen:'Docs',
-                params: {documents:filteredDocs, headerTitle:'Résultats de la recherche'}
+                params: {documents:filteredDocs, headerTitle:language==='fr'?'Résultats de la Recherche':'Search Results'}
             });
         } else {
-            setFormError('Choisissez une categorie');
+            setFormError(language==='fr'?'Choisissez une categorie':'Choose a category');
         }
     };
 
@@ -159,7 +161,7 @@ const Find = ({navigation}) => {
                     onFocus={closePickers}
                     value={title}
                     style={styles.textInput}
-                    placeholder='Title'
+                    placeholder={language==='fr'?'Titre':'Title'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setTitle(text)}
                 />
@@ -177,7 +179,7 @@ const Find = ({navigation}) => {
                     style={{...styles.dropDownInput}}
                     zIndex={10000}
                     zIndexInverse={1000}
-                    placeholder='country'
+                    placeholder={language==='fr'?'Pays':'Country'}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
                     labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
@@ -216,7 +218,7 @@ const Find = ({navigation}) => {
                     setOpen={setPeriodOpen}
                     setValue={setPeriod}
                     style={[styles.dropDownInput]}
-                    placeholder='Period'
+                    placeholder={language==='fr'?'Période':'Period'}
                     zIndex={8000}
                     zIndexInverse={3000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -234,7 +236,7 @@ const Find = ({navigation}) => {
                     setOpen={setCategoryOpen}
                     setValue={setCategory}
                     style={styles.dropDownInput}
-                    placeholder='Category'
+                    placeholder={language==='fr'?'Catégorie':'Category'}
                     zIndex={7000}
                     zIndexInverse={4000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -251,7 +253,7 @@ const Find = ({navigation}) => {
                     setOpen={setDomainOpen}
                     setValue={setDomain}
                     style={isSelectAllowed('domain') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='Domain'
+                    placeholder={language==='fr'?'Domaine':'Domain'}
                     zIndex={6000}
                     zIndexInverse={5000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -268,7 +270,7 @@ const Find = ({navigation}) => {
                     setOpen={setOITypeOpen}
                     setValue={setOIType}
                     style={isSelectAllowed('OIType') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='OI Type'
+                    placeholder={language==='fr'?"Type d'OI":'OI Type'}
                     zIndex={5000}
                     zIndexInverse={6000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -285,7 +287,7 @@ const Find = ({navigation}) => {
                     setOpen={setReportTypeOpen}
                     setValue={setReportType}
                     style={isSelectAllowed('reportType') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='Report Type'
+                    placeholder={language==='fr'?'Type de rapport':'Report type'}
                     zIndex={4000}
                     zIndexInverse={7000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -295,7 +297,7 @@ const Find = ({navigation}) => {
                     onFocus={closePickers}
                     value={concernedTitles}
                     style={isInputAllowed('concernedTitles') ?{...styles.textInput}:{display:'none'}}
-                    placeholder='Concerned Titles'
+                    placeholder={language==='fr'?'Titre concernés':'Concerned Titles'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
                 />
@@ -303,7 +305,7 @@ const Find = ({navigation}) => {
                     onFocus={closePickers}
                     value={editor}
                     style={isInputAllowed('editor') ?{...styles.textInput}:{display:'none'}}
-                    placeholder='Document editor'
+                    placeholder={language==='fr'?'Éditeur du document':'Document editor'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
                 />
@@ -328,7 +330,7 @@ const Find = ({navigation}) => {
                             {
                             fromValidityPeriod? fromValidityPeriod.toLocaleString()
                                 :
-                            'Valid from'
+                            language==='fr'?'Valide du':'Valid from'
                             }
                         </Text>
                     </View>
@@ -345,7 +347,7 @@ const Find = ({navigation}) => {
                         <Text style={{color:toValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             toValidityPeriod? toValidityPeriod.toLocaleString()
                             :
-                            'Valid until'}
+                            language==='fr'?"Valide jusqu'au":'Valid until'}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -362,7 +364,7 @@ const Find = ({navigation}) => {
                         <Text style={{color:publicationDate?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             publicationDate? publicationDate.toLocaleString()
                             :
-                            'Publication date'}
+                            language==='fr'?'Date de publication':'Publication date'}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -376,7 +378,7 @@ const Find = ({navigation}) => {
                     }
                     <TouchableOpacity style={styles.button} onPress={onFormSubmit}>
                         <Text style={{color:'#fff'}}>
-                            Rechercher le document
+                            {language==='fr'?'Rechercher le document':'Search the document'}
                         </Text>
                     </TouchableOpacity>
                 </View>

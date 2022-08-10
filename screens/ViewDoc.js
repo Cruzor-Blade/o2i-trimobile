@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import UploadParams from '../assets/UploadParams';
@@ -7,14 +7,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage'; 
+import { LangContext } from '../context/LangContext';
 
 // const RNFetchBlob = NativeModules.RNFetchBlob;
 const ViewDoc = ({route, navigation}) => {
+    const {language} = useContext(LangContext);
     const [loading, setLoading] = useState(false);
     
     const document = route.params.document;
     const waitingDoc = route.params?.waitingDoc;
-    const language = 'fr'
     const dropProperties = ['domain', 'OIType', 'reportType', 'period', 'fromValidityPeriod', 'toValidityPeriod'];
     const inputProperties = ['concernedTitles', 'editor', 'journal', 'validityPeriod', 'publicationDate'];
     
@@ -53,9 +54,9 @@ const ViewDoc = ({route, navigation}) => {
           //Showing alert for successful download
           let status = res.info().status;
           if (status == 200) {
-            alert("Document telecharge avec succes")
+            alert(language==='fr'?"Document télécharge avec succès":'Document downloaded successfully')
           } else {
-            alert("Echec du telechargement")
+            alert(language==='fr'?"Échec du téléchargement":'Download failed');
             console.log('Response error: ', JSON.stringify(res))
           }
         })
@@ -73,15 +74,15 @@ const ViewDoc = ({route, navigation}) => {
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                     {
-                        title:"Accès au stockage",
-                        message:"Authorisez l'accès au stockage"
+                        title:language==='fr'?"Accès au stockage":'Storage access',
+                        message:language==='fr'?"Authorisez l'accès au stockage":'Grant access to storage'
                     }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('Storage Permission Granted');
+                // console.log('Storage Permission Granted');
                 await downloadImage();
             } else {
-              alert("l'accès au stockage n'a pas été attribué");
+              alert(language==='fr'?"l'accès au stockage n'a pas été attribué":'Storage permission denied');
             }
             } catch (error) {
                 console.warn(error);
@@ -94,8 +95,13 @@ const ViewDoc = ({route, navigation}) => {
     const createdAt = document.createdAt.toDate();
 
     const getReadableDate = (date) => {
-        const monthsArray = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        const readableDate = date.getDate() + ' ' + monthsArray[date.getMonth()]+' '+date.getFullYear();
+        const months = {
+            en:['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September','October', 'November', 'December'],
+            fr:['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
+                'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+            };
+        const readableDate = date.getDate() + ' ' + months[language][date.getMonth()]+' '+date.getFullYear();
         return readableDate
     };
 
@@ -115,7 +121,7 @@ const ViewDoc = ({route, navigation}) => {
             };
     
             await navigation.setParams({waitingDoc:false});
-            console.log('Validated successfully');
+            // console.log('Validated successfully');
         
             setLoading(false);
         }
@@ -144,7 +150,9 @@ const ViewDoc = ({route, navigation}) => {
         'doc':'Word',
         'docx':'Word',
         'ppt':'PowerPoint',
-        'pptx':'PowerPoint'
+        'pptx':'PowerPoint',
+        'xls':'Excel',
+        'xlsx':'Excel'
     };
 
     // console.log('Waiting doc: ', route.params?.waitingDoc)
@@ -152,12 +160,11 @@ const ViewDoc = ({route, navigation}) => {
     return (
         <View style={styles.container}>
             <View style={{width:'100%'}}>
-                <Text style={{fontSize:20}}>Waiting doc: {route.params?.waitingDoc}</Text>
                 <View style={{flexDirection:'row'}}>
                     <FontAwesome5 color='red' style={{flex:1}} name='file-pdf' size={80} />
                     <View style={{flex:5}} >
                         <Text style={styles.title}>
-                            {document.title}{document.title}{document.title}{document.title}{document.title}{document.title}{document.title}
+                            {document.title}
                         </Text>
                     </View>
                 </View>
@@ -199,7 +206,7 @@ const ViewDoc = ({route, navigation}) => {
                             return null;
                         }
                     })}
-                    <Text style={styles.supInfo} >• Document chargé le {getReadableDate(createdAt)}</Text>
+                    <Text style={styles.supInfo} >• {language==='fr'?'Document chargé le ':'Document loaded on the '} {getReadableDate(createdAt)}</Text>
                 </View>
             </View>
             {
@@ -207,19 +214,19 @@ const ViewDoc = ({route, navigation}) => {
                 <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
                     <TouchableOpacity onPress={onInvalidation}>
                         <View style={{...styles.downloadButton, marginHorizontal:0, width:110, borderColor:'red'}}>
-                            <Text style={{color:'red', fontSize:18, fontWeight:'600'}}>Invalider</Text>
+                            <Text style={{color:'red', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Invalider':'Invalidate'}</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={onValidation}>
                         <View style={{...styles.downloadButton, marginHorizontal:0, width:110, borderColor:'#1C7D2D'}}>
-                            <Text style={{color:'#1C7D2D', fontSize:18, fontWeight:'600'}}>Valider</Text>
+                            <Text style={{color:'#1C7D2D', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Valider':'Validate'}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
                 :
                 <TouchableOpacity onPress={checkPermission}>
                     <View style={styles.downloadButton}>
-                        <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>Télécharger</Text>
+                        <Text style={{color:'rgb(0, 106, 179)', fontSize:18, fontWeight:'600'}}>{language==='fr'?'Télécharger':'Download'}</Text>
                     </View>
                 </TouchableOpacity>
             }

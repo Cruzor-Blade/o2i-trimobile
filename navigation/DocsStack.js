@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Docs from '../screens/Docs';
 import ViewDoc from '../screens/ViewDoc';
+import { LangContext } from '../context/LangContext';
 
 const Stack = createStackNavigator();
 
 const DocsStack = () => {
+    const {language} = useContext(LangContext);
+
     return (
         <Stack.Navigator
             initialRouteName='Docs'
@@ -16,7 +19,7 @@ const DocsStack = () => {
                 options={({navigation, route}) => {
                     console.log('Route params: ', route.params)
                     return {
-                        headerTitle:route.params?.headerTitle||'Tous les documents'
+                        headerTitle:route.params?.headerTitle||language==='fr'? 'Tous les Documents':'All Documents'
                     }
                 }}
             />
@@ -24,7 +27,7 @@ const DocsStack = () => {
                 name="ViewDoc"
                 component={ViewDoc}
                 options={{
-                    headerTitle:'Voir le document'
+                    headerTitle:language==='fr'?'Voir le Document':'See the Document'
                 }}
                 />
         </Stack.Navigator>

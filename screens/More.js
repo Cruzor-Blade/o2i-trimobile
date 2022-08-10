@@ -2,11 +2,12 @@ import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import auth from '@react-native-firebase/auth';
+import { LangContext } from '../context/LangContext';
 
 
 const More = () => {
     const {isAdmin, user, setUser} = useContext(AuthContext);
-    console.log('Is admin: ', isAdmin);
+    const {language} = useContext(LangContext);
 
     async function logOut() {
         await auth().signOut();
@@ -18,7 +19,7 @@ const More = () => {
             <Text>{user.email}</Text>
             <TouchableOpacity onPress={logOut}>
                 <View style={{height:35, width:100, backgroundColor:'green', alignItems:'center', justifyContent:'center'}}>
-                    <Text>Log Out</Text>
+                    <Text>{language==='fr'?'Se déconnecter':'Sign out'}</Text>
                 </View>
             </TouchableOpacity>
         </View>

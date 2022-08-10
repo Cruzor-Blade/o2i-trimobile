@@ -7,11 +7,14 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { AuthContext } from '../context/AuthContext';
+import { LangContext } from '../context/LangContext';
 
 
 const Upload = () => {
     const {user}= useContext(AuthContext);
+    const {language} = useContext(LangContext);
 
+    
     const [title, setTitle] = useState('');
     const [concernedTitles, setConcernedtitles] = useState('');
     const [editor, setEditor] = useState('');
@@ -22,11 +25,11 @@ const Upload = () => {
     
     const [country, setCountry] = useState(null);
     const [countryOpen, setCountryOpen] = useState(false);
-    const [countries, setCountries] = useState(UploadParams.fr.country);
+    const [countries, setCountries] = useState(UploadParams[language].country);
 
     const [organisation, setOrganisation] = useState(null);
     const [organisationOpen, setOrganisationOpen] = useState(false);
-    const [organisations, setOrganisations] = useState(UploadParams.fr.organisation);
+    const [organisations, setOrganisations] = useState(UploadParams[language].organisation);
 
     let periodOptions = [
         ];
@@ -39,19 +42,19 @@ const Upload = () => {
 
     const [category, setCategory] = useState(null);
     const [categoryOpen, setCategoryOpen] = useState(false);
-    const [categories, setCategories] = useState(UploadParams.fr.category);
+    const [categories, setCategories] = useState(UploadParams[language].category);
 
     const [domain, setDomain] = useState(null);
     const [domainOpen, setDomainOpen] = useState(false);
-    const [domains, setDomains] = useState(UploadParams.fr.domain);
+    const [domains, setDomains] = useState(UploadParams[language].domain);
 
     const [OIType, setOIType] = useState(null);
     const [OITypeOpen, setOITypeOpen] = useState(false);
-    const [OITypes, setOITypes] = useState(UploadParams.fr.OIType);
+    const [OITypes, setOITypes] = useState(UploadParams[language].OIType);
     
     const [reportType, setReportType] = useState(null);
     const [reportTypeOpen, setReportTypeOpen] = useState(false);
-    const [reportTypes, setReportTypes] = useState(UploadParams.fr.reportType);
+    const [reportTypes, setReportTypes] = useState(UploadParams[language].reportType);
     
     const [document, setDocument] = useState(null);
     
@@ -116,7 +119,6 @@ const Upload = () => {
         
         const pickedDocument = {name: result[0].name, type: result[0].type, uri:`file://${decodeURIComponent(result[0].fileCopyUri)}`};
         setDocument(pickedDocument);
-        console.log('Picked doc: ', pickedDocument);
     };
 
 
@@ -136,7 +138,7 @@ const Upload = () => {
             
             setLoading(false);
             clearForm();
-            alert("Document charge avec succes");
+            alert(language==='fr'?"Document chargé avec succès":'Uploaded successfully');
         }
 
         const condition = 
@@ -155,7 +157,6 @@ const Upload = () => {
             && (!isInputAllowed('publicationDate') || publicationDate)
             && document?true:false;
 
-        console.log('condition satisfied: ', condition);
         if (condition) {
             let docObj = {};
             docObj.title = title;
@@ -173,8 +174,6 @@ const Upload = () => {
             if (isInputAllowed('validityPeriod')) docObj.toValidityPeriod = toValidityPeriod;
             if (isInputAllowed('publicationDate')) docObj.publicationDate = publicationDate;
 
-            console.log('Category: ', category);
-            console.log('Document properties: ', docObj);
             try {
                 saveDocument(document, category, docObj);
             } catch (error) {
@@ -182,7 +181,7 @@ const Upload = () => {
                 console.log('Error while saving the document: ', error)
             }
         } else {
-            setFormError('One or more fields are empty, please check again');
+            setFormError(language==='fr'?'Un ou plusieurs champs sont vides':'One or more fields are empty');
         }
 
         const clearForm = () => {
@@ -214,7 +213,7 @@ const Upload = () => {
                     onFocus={closePickers}
                     value={title}
                     style={styles.textInput}
-                    placeholder='Title'
+                    placeholder={language==='fr'?'Titre':'Title'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setTitle(text)}
                 />
@@ -232,7 +231,7 @@ const Upload = () => {
                     style={{...styles.dropDownInput}}
                     zIndex={10000}
                     zIndexInverse={1000}
-                    placeholder='country'
+                    placeholder={language==='fr'?'Pays':'Country'}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
                     labelStyle={{color:'rgb(0, 106, 179)'}}
                 />
@@ -271,7 +270,7 @@ const Upload = () => {
                     setOpen={setPeriodOpen}
                     setValue={setPeriod}
                     style={[styles.dropDownInput]}
-                    placeholder='Period'
+                    placeholder={language==='fr'?'Période':'Period'}
                     zIndex={8000}
                     zIndexInverse={3000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -289,7 +288,7 @@ const Upload = () => {
                     setOpen={setCategoryOpen}
                     setValue={setCategory}
                     style={styles.dropDownInput}
-                    placeholder='Category'
+                    placeholder={language==='fr'?'Categorie':'Category'}
                     zIndex={7000}
                     zIndexInverse={4000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -306,7 +305,7 @@ const Upload = () => {
                     setOpen={setDomainOpen}
                     setValue={setDomain}
                     style={isSelectAllowed('domain') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='Domain'
+                    placeholder={language==='fr'?'Domain':'Domaine'}
                     zIndex={6000}
                     zIndexInverse={5000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -323,7 +322,7 @@ const Upload = () => {
                     setOpen={setOITypeOpen}
                     setValue={setOIType}
                     style={isSelectAllowed('OIType') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='OI Type'
+                    placeholder={language==='fr'?"Type d'OI":'OI Type'}
                     zIndex={5000}
                     zIndexInverse={6000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -340,7 +339,7 @@ const Upload = () => {
                     setOpen={setReportTypeOpen}
                     setValue={setReportType}
                     style={isSelectAllowed('reportType') ?{...styles.dropDownInput}:{display:'none'}}
-                    placeholder='Report Type'
+                    placeholder={language==='fr'?'Type de rapport':'Report Type'}
                     zIndex={4000}
                     zIndexInverse={7000}
                     selectedItemLabelStyle={{color:'rgb(0, 106, 179)'}}
@@ -350,7 +349,7 @@ const Upload = () => {
                     onFocus={closePickers}
                     value={concernedTitles}
                     style={isInputAllowed('concernedTitles') ?{...styles.textInput}:{display:'none'}}
-                    placeholder='Concerned Titles'
+                    placeholder={language==='fr'?'Titres concernés':'Concerned Titles'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setConcernedtitles(text)}
                 />
@@ -358,7 +357,7 @@ const Upload = () => {
                     onFocus={closePickers}
                     value={editor}
                     style={isInputAllowed('editor') ?{...styles.textInput}:{display:'none'}}
-                    placeholder='Document editor'
+                    placeholder={language==='fr'?'Éditeur du document':'Document editor'}
                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                     onChangeText={(text) => setEditor(text)}
                 />
@@ -383,7 +382,7 @@ const Upload = () => {
                             {
                             fromValidityPeriod? fromValidityPeriod.toLocaleString()
                                 :
-                            'Valid from'
+                                language==='fr'?'Valide du':'Valid from'
                             }
                         </Text>
                     </View>
@@ -400,7 +399,7 @@ const Upload = () => {
                         <Text style={{color:toValidityPeriod?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             toValidityPeriod? toValidityPeriod.toLocaleString()
                             :
-                            'Valid until'}
+                            language==='fr'?"Valide jusqu'au":'Valid until'}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -417,7 +416,7 @@ const Upload = () => {
                         <Text style={{color:publicationDate?'rgb(0, 106, 179)':'rgba(0,0,0,0.5)'}}>{
                             publicationDate? publicationDate.toLocaleString()
                             :
-                            'Publication date'}
+                            language==='fr'?'Date de publication':'Publication date'}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -431,7 +430,7 @@ const Upload = () => {
                     }
                     <TouchableOpacity style={{backgroundColor:'rgb(0, 106, 179)', ...styles.button, marginTop:20}} onPress={pickDocument}>
                         <Text style={{color:'#fff'}}>
-                            Choisir un document
+                            {language==='fr'?'Choisir un document':'Pick a document'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -445,7 +444,7 @@ const Upload = () => {
                     }
                     <TouchableOpacity style={{backgroundColor:'rgb(71, 167, 42)', ...styles.button}} onPress={onFormSubmit}>
                         <Text style={{color:'#fff'}}>
-                            Charger le document
+                            {language==='fr'? 'Charger le document':'Upload'}
                         </Text>
                     </TouchableOpacity>
                 </View>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import { ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
@@ -9,11 +9,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Entypo from 'react-native-vector-icons/Entypo';
 import DocsStack from "./DocsStack";
 import LinkStack from "./LinkStack";
+import { LangContext } from "../context/LangContext";
 
 
 const Tab = createBottomTabNavigator();
 
 const HomeTab = () => {
+    const {language} = useContext(LangContext);
     return (
         <Tab.Navigator
             initialRouteName="Home"
@@ -27,7 +29,7 @@ const HomeTab = () => {
                         tabBarIcon: ({focused}) => (
                             <Octicons name="home" size={26} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
                         ),
-                        headerTitle:'Les Catégories',
+                        headerTitle:language==='fr'? 'Les Catégories':'The Categories',
                         headerRight:() => route.params?.loading?<ActivityIndicator color='rgb(0, 106, 179)' size={26} style={{marginRight:15, marginLeft:10}} />:null
                     }
                 }}
@@ -58,7 +60,8 @@ const HomeTab = () => {
                 options={{
                     tabBarIcon: ({focused}) => (
                         <Feather name="user" size={27} color={focused ? 'rgb(0, 106, 179)' : '#878589'} />
-                    )
+                    ),
+                    headerTitle:language==='fr'?'Plus':'More'
                 }}
             />
 

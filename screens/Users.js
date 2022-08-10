@@ -2,15 +2,22 @@ import React, {useContext} from 'react';
 import {View, Text, StyleSheet, FlatList, Switch} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../context/AuthContext';
+import {LangContext} from '../context/LangContext';
 
 const Users = ({route, navigation}) =>{
     const {user} = useContext(AuthContext);
+    const {language} = useContext(LangContext);
     const users = route.params.users;
     const admins = route.params.admins;
     
     const getReadableDate = (date) => {
-        const monthsArray = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        const readableDate = date.getDate() + ' ' + monthsArray[date.getMonth()]+' '+date.getFullYear();
+        const months = {
+            en:['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September','October', 'November', 'December'],
+            fr:['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
+                'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+            };
+        const readableDate = date.getDate() + ' ' + months[language][date.getMonth()]+' '+date.getFullYear();
         return readableDate
     };
 
@@ -56,7 +63,7 @@ const Users = ({route, navigation}) =>{
                                     <Text style={{fontSize:16, color:'rgb(0, 106, 179)', fontWeight:'500', marginBottom:5}}>{item.email}</Text>
                                     <Text style={{color:'#000'}}>{item.phone}</Text>
                                     <Text style={{color:'#000'}}>
-                                        Admin depuis le {getReadableDate(admins.filter(user => user.id == item.id)[0].isAdminSince.toDate())} 
+                                        {language==='fr'?'Admin depuis le':'Admin since the'} {getReadableDate(admins.filter(user => user.id == item.id)[0].isAdminSince.toDate())} 
                                     </Text>
                                 </View>
                                 <View style={{justifyContent:'space-around'}}>
@@ -82,7 +89,7 @@ const Users = ({route, navigation}) =>{
                             <Text style={{fontSize:16, color:'rgb(0, 106, 179)', fontWeight:'500', marginBottom:5}}>{item.email}</Text>
                             <Text style={{color:'#000'}}>{item.phone}</Text>
                             <Text style={{color:'#000'}}>
-                                A rejoint depuis le {getReadableDate(item.registeredOn.toDate())} 
+                                {language==='fr'?'A rejoint depuis le ':'Joined since '}{getReadableDate(item.registeredOn.toDate())} 
                             </Text>
                         </View>
                         <View style={{justifyContent:'space-around'}}>

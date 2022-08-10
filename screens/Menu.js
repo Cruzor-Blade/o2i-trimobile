@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
+import { LangContext } from '../context/LangContext';
 
 
 const Menu = ({navigation}) => {
+    const {language} = useContext(LangContext);
+    
     const MenuItem = ({title, onPress, Icon}) => {
         return (
             <TouchableOpacity activeOpacity={0.8} onPress={onPress} >
@@ -62,29 +65,29 @@ const Menu = ({navigation}) => {
         await navigation.setParams({loading:false});
         navigation.jumpTo('DocsStack', {
             screen:'Docs',
-            params: {documents:waitingDocsArr, waitingDocs:true, headerTitle:'Documents en attente'}
+            params: {documents:waitingDocsArr, waitingDocs:true, headerTitle:language==='fr'?'Documents en attente':'Waiting documents'}
         });
     };
 
     return (
         <View style={styles.container}>
             <MenuItem
-                title='Charger un document'
+                title={language==='fr'?'Charger un document':'Upload a document'}
                 onPress={() => navigation.navigate('Upload')}
                 Icon={() => <Feather style={styles.menuIcon} name='upload' size={28} />}
             />
             <MenuItem
-                title='Trouver le document'
+                title={language==='fr'?'Trouver le document':'Find the document'}
                 onPress={() => navigation.navigate('Find')}
                 Icon={() => <Feather style={styles.menuIcon} name='search' size={28} />}
             />
             <MenuItem
-                title='Documents en attente'
+                title={language==='fr'?'Documents en attente':'Waiting documents'}
                 onPress={getWaitingDocs}
                 Icon={() => <Ionicons style={styles.menuIcon} name='timer-outline' size={28} />}
             />
             <MenuItem
-                title='Utilisateurs'
+                title={language==='fr'?'Utilisateurs':'Users'}
                 onPress={getUsers}
                 Icon={() => <Feather style={styles.menuIcon} name="user" size={27}/>}
             />
