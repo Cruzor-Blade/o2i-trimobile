@@ -4,11 +4,14 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import { LangContext } from '../context/LangContext';
+import { AuthContext } from '../context/AuthContext';
 
 
 const Menu = ({navigation}) => {
-    const {language} = useContext(LangContext);
+    const {isAdmin} = useContext(AuthContext);
+    const { language} = useContext(LangContext);
     
+    console.log('Is admin: ', isAdmin);
     const MenuItem = ({title, onPress, Icon}) => {
         return (
             <TouchableOpacity activeOpacity={0.8} onPress={onPress} >
@@ -81,16 +84,24 @@ const Menu = ({navigation}) => {
                 onPress={() => navigation.navigate('Find')}
                 Icon={() => <Feather style={styles.menuIcon} name='search' size={28} />}
             />
-            <MenuItem
-                title={language==='fr'?'Documents en attente':'Waiting documents'}
-                onPress={getWaitingDocs}
-                Icon={() => <Ionicons style={styles.menuIcon} name='timer-outline' size={28} />}
-            />
-            <MenuItem
-                title={language==='fr'?'Utilisateurs':'Users'}
-                onPress={getUsers}
-                Icon={() => <Feather style={styles.menuIcon} name="user" size={27}/>}
-            />
+            {
+                isAdmin ? (
+                    <>
+                        <MenuItem
+                            title={language==='fr'?'Documents en attente':'Waiting documents'}
+                            onPress={getWaitingDocs}
+                            Icon={() => <Ionicons style={styles.menuIcon} name='timer-outline' size={28} />}
+                        />
+                        <MenuItem
+                            title={language==='fr'?'Utilisateurs':'Users'}
+                            onPress={getUsers}
+                            Icon={() => <Feather style={styles.menuIcon} name="user" size={27}/>}
+                        />
+                    </>
+                )
+                :
+                null
+            }
         </View>
     )
 }
