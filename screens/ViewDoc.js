@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
+import {View, Text, Linking, TouchableOpacity, StyleSheet, Platform, PermissionsAndroid, ActivityIndicator} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import UploadParams from '../assets/UploadParams';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage'; 
 import { LangContext } from '../context/LangContext';
+import mime from 'mime-types';
 
 // const RNFetchBlob = NativeModules.RNFetchBlob;
 const ViewDoc = ({route, navigation}) => {
@@ -30,12 +31,12 @@ const ViewDoc = ({route, navigation}) => {
         ext = '.' + ext[0];
 
         //Get config and fs from RNFetchBlob
-        const {config, fs} = RNFetchBlob;
+        const {config, fs, android} = RNFetchBlob;
         let DownloadDir = fs.dirs.DownloadDir;
         let filePath = DownloadDir+ '/o2i-tri/O2ITRI_'+ document.title + '_'+
             Math.floor(date.getTime() + date.getSeconds()/2);
 
-        if(document.type) filePath+=document.type;
+        if(document.type) filePath+='.'+document.type;
 
         let options = {
           fileCache: true,
@@ -43,7 +44,7 @@ const ViewDoc = ({route, navigation}) => {
             //related to android only
             useDownloadManager: true,
             notification:true,
-            path:filePath  
+            path:filePath
             // description: 'Document'
           }
         }
@@ -52,13 +53,11 @@ const ViewDoc = ({route, navigation}) => {
         .fetch('GET', DocURI)
         .then((res) => {
           //Showing alert for successful download
-          let status = res.info().status;
-          if (status == 200) {
-            alert(language==='fr'?"Document télécharge avec succès":'Document downloaded successfully')
-          } else {
-            alert(language==='fr'?"Échec du téléchargement":'Download failed');
-            console.log('Response error: ', JSON.stringify(res))
-          }
+        //   alert(language==='fr'?"Document télécharge avec succès":'Document downloaded successfully')
+            // console.log('Response', JSON.stringify(res));
+            // console.log('File path: ', filePath);
+            android.actionViewIntent(res.path(), mime.lookup(document.type));
+            
         })
         .catch((error) => {
           console.log('Error while downloading: ', error)

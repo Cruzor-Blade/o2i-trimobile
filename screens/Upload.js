@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { AuthContext } from '../context/AuthContext';
 import { LangContext } from '../context/LangContext';
+import mime from 'mime-types';
 
 
 const Upload = () => {
@@ -126,7 +127,7 @@ const Upload = () => {
         if(formError) setFormError(null);
         const saveDocument = async(document, category, properties) => {
             const currentDate = new Date();
-            const fileName = properties.title.split('.').join('_') + currentDate.toISOString() + '.' + document.type;
+            const fileName = properties.title.split('.').join('_') + currentDate.toISOString() + '.' + mime.extension(document.type);
             const storageRef = storage().ref(`documents/${fileName}`);
             setLoading(true);
             await storageRef.putFile(document.uri);
@@ -163,7 +164,7 @@ const Upload = () => {
             docObj.country = country;
             docObj.organisation = organisation;
             docObj.period = period;
-            docObj.type = document.name.split('.')[document.name.split('.').length-1];
+            docObj.type = mime.extension(document.type);
             if (isSelectAllowed('domain')) docObj.domain = domain;
             if (isSelectAllowed('OIType')) docObj.OIType = OIType;
             if (isSelectAllowed('reportType')) docObj.reportType = reportType;
