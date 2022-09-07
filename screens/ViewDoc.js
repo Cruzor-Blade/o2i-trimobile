@@ -177,7 +177,8 @@ const ViewDoc = ({route, navigation}) => {
         'ppt':'PowerPoint',
         'pptx':'PowerPoint',
         'xls':'Excel',
-        'xlsx':'Excel'
+        'xlsx':'Excel',
+        'txt':'Texte'
     };
 
     useEffect(() => {
